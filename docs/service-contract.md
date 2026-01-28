@@ -75,18 +75,22 @@ Invalid events result in a **400 Bad Request** response.
 
 - **Durability**: once an event is successfully accepted, it will not be lost.
 - **At-least-once ingestion** semantics.
+- **Immutability**: accepted events are stored and returned without modification.
+- **Idempotent ingestion**: submitting the same event_id multiple times does not create duplicate records.
+- **Read consistency**: once an event is accepted, it can be retrieved by its identifier.
 - The service does **not** guarantee event ordering.
 
 ---
 
 ## Non-Goals
 
-The service explicitly does **not**:
+The service explicitly does **not provide**:
 
-- Perform authentication of end users.
-- Enrich or transform event payloads.
-- Correlate or aggregate events.
-- Provide analytics or reporting capabilities.
+- Payload enrichment or transformation capabilities.
+- Event correlation or aggregation capabilities.
+- Analytical or reporting features.
+- Authentication of end users
+
 
 These concerns are intentionally left out of scope to keep the service focused on platform responsibilities.
 
