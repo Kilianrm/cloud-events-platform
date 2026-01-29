@@ -7,7 +7,7 @@ the logical architecture.
 | Logical Component | AWS Service |
 |------------------|-------------|
 | Ingestion Interface      | API Gateway |
-| Read Interface   | API Gateway + Lambda |
+| Read Interface   | API Gateway |
 | Validation       | Lambda |
 | Persistence      | DynamoDB |
 | Observability    | CloudWatch |
