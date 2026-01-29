@@ -29,24 +29,45 @@ to concrete components.
 
 ## How to Read This Documentation
 
-### 1. Core Architecture (required)
-- Architecture Overview
-- Logical Components
+```mermaid
+flowchart LR
 
-### 2. Contracts and Guarantees
-- Service Contract
-- API Contract
-- Data Model
+%% ===== ARCHITECTURE =====
+subgraph ARCH["🧱 Architecture"]
+  AO[Architecture Overview]
+  LC[Logical Components]
+end
 
-### 3. Implementation Design (optional deep dive)
-- Cloud Mapping
-- API Gateway
-- Ingestion Lambda
-- Read Lambda
-- Persistence (DynamoDB)
+%% ===== CONTRACTS =====
+subgraph CONTRACTS["📜 Contracts"]
+  SC[Service Contract]
+  API[API Contract]
+  DM[Data Model]
+end
+
+%% ===== DESIGN / MAPPING =====
+subgraph DESIGN["☁️ Cloud Mapping"]
+  CM[AWS Mapping]
+end
+
+%% ===== COMPONENTS =====
+subgraph COMPONENTS["⚙️ Component Design"]
+  AGW[API Gateway]
+  ING[Ingestion Lambda]
+  READ[Read Lambda]
+  DB[DynamoDB]
+end
+
+%% ===== FLOW =====
+ARCH --> CONTRACTS
+CONTRACTS --> DESIGN
+DESIGN --> COMPONENTS
+
+```
 
 
-Note: Readers who are primarily interested in consuming the API may start directly from Section 2: Service Contract and Guarantees.
+
+Note: Readers who are primarily interested in consuming the API may start directly from: Contracts
 
 
 ---
@@ -120,7 +141,7 @@ Maps logical components to concrete AWS services.
 
 This document captures **implementation choices**, not architectural constraints.
 
-- [Cloud Mapping](architecture/cloud-mapping.md)
+- [Cloud Mapping](architecture/aws-service-mapping.md)
 
 ---
 
