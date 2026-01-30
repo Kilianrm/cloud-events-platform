@@ -109,7 +109,7 @@ This document is authoritative for service behavior and semantics.
 Defines the HTTP interface exposed to clients:
 endpoints, requests, responses and error semantics.
 
-- [Api Contract](api/api-contract-v1.md)
+- [Api Contract](api/api-contract.md)
 
 ### Data Model
 Defines the **logical data model** exposed by the service contract,

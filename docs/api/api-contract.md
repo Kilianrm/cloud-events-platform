@@ -1,23 +1,22 @@
-# API Contract – v1 (HTTP)
+# API Contract (HTTP)
 
 ## Overview
 
-This document defines the HTTP API contract for version v1 of the service.
+This document defines the HTTP API exposed by the service.
 
-It describes how the v1 service contract is exposed over HTTP,
-including endpoints, request and response formats, status codes,
-and error semantics.
+It specifies endpoints, request and response formats, status codes,
+and error semantics for the HTTP interface.
 
-This document is transport-specific and complements the
-service-level contract.
+This document complements the service-level contract.
+
 
 ---
 
 ## Base URL
 
-All endpoints described in this document are versioned under:
+All endpoints described in this document are under:
 
-/v1
+/
 
 ---
 
@@ -30,7 +29,7 @@ All endpoints described in this document are versioned under:
 
 ## Write API
 
-### POST /v1/events
+### POST /events
 
 Registers a new event for durable persistence.
 
@@ -122,7 +121,7 @@ An unexpected internal error occurred.
 
 ## Read API
 
-### GET /v1/events/{event_id}
+### GET /events/{event_id}
 
 Retrieves a previously accepted event by its identifier.
 
@@ -197,8 +196,6 @@ All error responses follow a consistent structure:
 - Repeated submissions with the same identifier do not create duplicates
 - Idempotent writes return a successful response
 
-No explicit idempotency headers are required in v1.
-
 ---
 
 ## Limits
@@ -208,9 +205,3 @@ No explicit idempotency headers are required in v1.
 - No bulk operations are supported
 
 ---
-
-## Versioning
-
-This document describes the v1 HTTP API contract.
-
-Backward-incompatible changes will result in a new API version.

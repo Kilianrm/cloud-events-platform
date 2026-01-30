@@ -3,12 +3,13 @@
 ## Overview
 
 This document defines the logical data model for events accepted
-by the platform in v1.
+by the platform.
 
 It describes the structure and meaning of the data exposed by the
 service, independently of storage, infrastructure, or transport.
 
 Behavioral guarantees are defined by the service contract.
+
 
 ---
 

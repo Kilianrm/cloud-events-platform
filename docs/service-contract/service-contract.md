@@ -107,19 +107,3 @@ simple and stable.
 - No guarantees are provided beyond the documented access patterns
 
 ---
-
-## Supported Capabilities (v1)
-
-- Accept immutable events
-- Retrieve a single event by its identifier
-
-Future capabilities may be added outside the core contract.
-
----
-
-## Versioning
-
-This document defines version v1 of the service contract.
-
-Backward-incompatible changes will result in a new major version of the
-service contract.
