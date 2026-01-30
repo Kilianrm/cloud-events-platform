@@ -94,7 +94,7 @@ Protect the service while preserving its existing behavior.
 
 ### Additions
 - Authentication mechanism
-- Rate limiting and throttling
+- **Per-client** rate limiting and throttling
 - IAM permission tightening
 - Input validation hardening
 
@@ -132,6 +132,36 @@ Make failure semantics explicit and safe.
 - Retry semantics
 - Updated service contract
 - ADRs for reliability-related decisions
+
+---
+
+## v1.4 – Scalability & Load Behavior  
+*(Triggered by Load and Cost Pressure)*
+
+**Observed Problem**  
+Under sustained or bursty load, the system’s behavior becomes implicit:
+- capacity limits are unclear
+- cost growth is uncontrolled
+- failure modes are ambiguous
+
+**Goal**  
+Make system behavior under load **explicit, predictable, and cost-aware**.
+
+### Additions
+- System-level concurrency limits
+- Explicit throughput boundaries
+- Backpressure and rejection semantics
+- Cost-aware scaling decisions
+
+### Contract Impact
+- Clear guarantees about acceptance and rejection under load
+- Explicit non-guarantees when capacity limits are reached
+
+### Documentation
+- Load and capacity assumptions
+- Rejection and backpressure behavior
+- Updated architecture overview
+- ADRs explaining scalability boundaries
 
 ---
 

@@ -27,10 +27,3 @@ Ensures:
 Provides durable, highly available storage with append-only semantics.
 
 ---
-
-### Cross-Cutting Components
-
-#### Observability
-Provides logs, metrics and alarms across all components.
-
----

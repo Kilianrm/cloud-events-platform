@@ -153,7 +153,9 @@ This document captures **implementation choices**, not architectural constraints
 
 ---
 
-## Decisions
+## Supporting Docs
+
+### Decisions
 
 Decision Records (ADRs) document *why* certain
 design choices were made.
@@ -164,7 +166,7 @@ These decisions provide historical context and guide future evolution.
 
 ---
 
-## Roadmap
+### Roadmap
 
 This section describes the expected evolution of the project over time, including
 planned features, architectural milestones, and future improvements.
