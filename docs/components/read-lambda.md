@@ -8,6 +8,8 @@ events from the Persistence component.
 It implements the read semantics defined in the Service Contract
 and exposes them through the API Gateway.
 
+This component is stateless and performs read-only operations.
+
 ---
 
 ## Responsibilities
@@ -29,7 +31,7 @@ The Read Lambda is NOT responsible for:
 
 ## Input
 
-The Lambda receives requests from API Gateway using proxy integration.
+The Lambda receives requests from the API Gateway using proxy integration.
 
 The request includes the event identifier as a path parameter.
 
@@ -40,7 +42,7 @@ The request includes the event identifier as a path parameter.
 For each invocation, the Read Lambda performs the following steps:
 
 1. Extract the event identifier from the request
-2. Query the Persistence component by primary key
+2. Retrieve the event from the Persistence component by primary key
 3. Return the event if found
 4. Return a not-found response if no event exists
 
@@ -58,7 +60,7 @@ For each invocation, the Read Lambda performs the following steps:
 
 - If the event exists, it is returned exactly as stored
 - If no event exists, a not-found response is returned
-- No partial responses are supported
+- No partial or transformed responses are supported
 
 ---
 
@@ -69,17 +71,7 @@ The Read Lambda distinguishes between:
 - Event not found
 - Persistence or internal errors
 
-All error responses are returned according to the API Contract.
-
----
-
-## Observability
-
-The Read Lambda emits:
-
-- Structured logs for each invocation
-- Metrics for successful and failed reads
-- Error logs for persistence failures
+All responses are returned according to the API Contract.
 
 ---
 
@@ -95,10 +87,3 @@ The Read Lambda emits:
 - Invoked by: API Gateway
 - Reads data from: Persistence component
 - Implements: Service Contract read semantics
-
----
-
-## Versioning
-
-This document describes the Read Lambda behavior
-for service version v1.

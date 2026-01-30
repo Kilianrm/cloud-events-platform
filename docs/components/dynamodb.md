@@ -16,7 +16,7 @@ operational behavior.
 
 ## Table Design
 
-A single DynamoDB table is used in v1.
+A single DynamoDB table is used in the initial implementation.
 
 ### Primary Key
 - **Partition Key**: `event_id`
@@ -40,7 +40,7 @@ This enforces idempotent writes and prevents accidental overwrites.
 - Events are retrieved using a direct `GetItem` by primary key.
 - No scan or query operations are supported.
 
-No additional access patterns are supported in v1.
+No additional access patterns are supported.
 
 ---
 
@@ -82,7 +82,7 @@ Once written, items are never modified or removed.
 
 ## Indexing Strategy
 
-No secondary indexes are defined in v1.
+No secondary indexes are defined.
 
 - No GSIs
 - No LSIs
@@ -95,11 +95,12 @@ Analytical or exploratory queries are explicitly out of scope.
 ## Limits & Constraints
 
 - Maximum item size: DynamoDB limits apply
-- No support for batch writes or reads in v1
-- Hot partition risks are mitigated by the natural distribution of identifiers
+- No support for batch writes or reads
+- Hot partition risks are considered acceptable due to the expected
+  natural distribution of event identifiers
 - No TTL-based expiration is configured
 
-These constraints are intentional and aligned with the v1 scope.
+These constraints are intentional and aligned with the current system scope.
 
 ---
 
@@ -110,7 +111,7 @@ These constraints are intentional and aligned with the v1 scope.
 - Backup and restore behavior follows standard DynamoDB guarantees
 - Failure modes are limited to write rejections or read failures
 
-The persistence layer does not emit domain-specific metrics.
+The persistence layer does not expose domain-specific metrics directly.
 
 ---
 
@@ -124,13 +125,4 @@ Alternative storage options considered include:
 DynamoDB was selected due to its durability guarantees, scalability model,
 and support for conditional writes.
 
-Further rationale is documented in the relevant architectural decision records.
-
----
-
-## Related Documents
-
-- Architecture Overview
-- Logical Components
-- Cloud Mapping
-- Ingestion Lambda
+Further rationale is documented in the relevant decision records.
