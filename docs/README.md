@@ -58,10 +58,18 @@ subgraph COMPONENTS["⚙️ Component Design"]
   DB[DynamoDB]
 end
 
+
 %% ===== FLOW =====
 ARCH --> CONTRACTS
 CONTRACTS --> DESIGN
 DESIGN --> COMPONENTS
+
+%% ===== DOCUMENTS (NO FLOW) =====
+subgraph DOCS["📄 Supporting Docs"]
+  ADR[Decisions]
+  NFR[Roadmap]
+end
+
 
 ```
 
@@ -152,9 +160,20 @@ design choices were made.
 
 These decisions provide historical context and guide future evolution.
 
-- [Decisions](decisions)
+- [Decisions](decisions/)
 
 ---
+
+## Roadmap
+
+This section describes the expected evolution of the project over time, including
+planned features, architectural milestones, and future improvements.
+
+- [Roadmap](roadmap.md)
+
+---
+
+
 
 ## Infrastructure and Application Code
 
