@@ -26,3 +26,6 @@ def persist_event(event: dict) -> None:
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
             raise EventAlreadyExists()
         raise
+
+
+
