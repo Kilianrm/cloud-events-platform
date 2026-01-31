@@ -46,7 +46,7 @@ resource "aws_lambda_function" "read" {
   filename         = data.archive_file.read_lambda_zip.output_path
   source_code_hash = data.archive_file.read_lambda_zip.output_base64sha256
 
-  timeout      = 5
+  timeout     = 5
   memory_size = 128
 
   environment {

@@ -37,7 +37,7 @@ data "archive_file" "ingestion_lambda_zip" {
     filename = "shared/time.py"
   }
 
-  
+
 }
 ################################
 # INGESTION LAMBDA
@@ -52,12 +52,12 @@ resource "aws_lambda_function" "ingestion" {
   filename         = data.archive_file.ingestion_lambda_zip.output_path
   source_code_hash = data.archive_file.ingestion_lambda_zip.output_base64sha256
 
-  timeout = 5
+  timeout     = 5
   memory_size = 128
 
   environment {
     variables = {
-      TABLE_NAME  = aws_dynamodb_table.events.name
+      TABLE_NAME = aws_dynamodb_table.events.name
     }
   }
 
