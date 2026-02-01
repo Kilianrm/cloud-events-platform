@@ -49,7 +49,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: infra/envs/${{ matrix.env }}
-        run: terraform init -input=false
+        run: terraform init -input=false -backend=false
 
       - name: Terraform Format
         working-directory: infra
