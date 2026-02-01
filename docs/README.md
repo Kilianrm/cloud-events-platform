@@ -68,6 +68,9 @@ DESIGN --> COMPONENTS
 subgraph DOCS["📄 Supporting Docs"]
   ADR[Decisions]
   NFR[Roadmap]
+  CI[Ci]
+  TESTING[Testing]
+  INFRA[Infra]
 end
 
 
@@ -173,6 +176,26 @@ planned features, architectural milestones, and future improvements.
 
 - [Roadmap](roadmap.md)
 
+
+### Ci
+
+This section describes how the continuous integration pipeline is structured and how it behaves.
+
+- [Ci](platform/ci.md)
+
+### Infra
+
+This section explains the infrastructure design, provisioning logic, and key architectural decisions.
+
+- [Infra](platform/infra.md)
+
+### Testing
+
+This section describes the testing strategy, including how tests are executed and what is covered.
+
+- [Testing](platform/testing.md)
+
+
 ---
 
 
@@ -182,8 +205,9 @@ planned features, architectural milestones, and future improvements.
 This documentation describes the system design.
 
 Concrete implementation can be found in:
-- `/infra` — Infrastructure as Code
-- `/app` — Application runtime code
+[Testing](platform/testing.md)
+- [`/infra`](/infra) — Infrastructure as Code
+- [`/app`](/app) — Application runtime code
 
 Those directories are expected to reflect the architecture
 and contracts defined here.

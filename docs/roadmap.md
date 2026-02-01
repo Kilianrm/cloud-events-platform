@@ -30,7 +30,7 @@ and evolved without manual intervention.
 - Synchronous HTTP API
 - Serverless architecture
 - Infrastructure defined as code
-- Automated build and deployment pipeline
+- CI pipeline for application testing and infrastructure validation
 
 ### Runtime Components
 - API Gateway
@@ -39,7 +39,7 @@ and evolved without manual intervention.
 
 ### Supporting Systems
 - Terraform (infrastructure provisioning)
-- CI/CD pipeline (GitHub Actions or equivalent)
+- CI pipeline (GitHub Actions or equivalent)
 - Environment separation (e.g. dev / prod)
 
 ### Documentation
