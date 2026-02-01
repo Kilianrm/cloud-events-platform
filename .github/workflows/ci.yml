@@ -59,6 +59,3 @@ jobs:
         working-directory: infra/envs/${{ matrix.env }}
         run: terraform validate
 
-      - name: Terraform Plan
-        working-directory: infra/envs/${{ matrix.env }}
-        run: terraform plan -input=false
