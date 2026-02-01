@@ -1,5 +1,5 @@
 terraform {
-required_version = ">= 1.5"
+  required_version = ">= 1.5"
 
   required_providers {
     aws = {
@@ -9,10 +9,10 @@ required_version = ">= 1.5"
   }
 
   backend "s3" {
-    bucket         = "cloud-events-terraform-state"
-    key            = "prod/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
+    bucket  = "cloud-events-terraform-state"
+    key     = "prod/terraform.tfstate"
+    region  = "us-east-1"
+    encrypt = true
   }
 }
 
@@ -27,9 +27,9 @@ provider "aws" {
 }
 
 module "events" {
-  source = "../../modules/events"
-  environment  = local.environment
-  aws_region   = local.region
+  source      = "../../modules/events"
+  environment = local.environment
+  aws_region  = local.region
   app_path    = local.app_path
 }
 

@@ -3,13 +3,13 @@
 ################################
 
 resource "aws_apigatewayv2_api" "events_api" {
-  name = "events-${var.environment}-api"
+  name          = "events-${var.environment}-api"
   protocol_type = "HTTP"
 
   tags = {
-  Name        = "events-api"
-  Component   = "api"
-  Environment = var.environment
+    Name        = "events-api"
+    Component   = "api"
+    Environment = var.environment
   }
 
 }

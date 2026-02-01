@@ -20,9 +20,9 @@ resource "aws_iam_role" "ingestion_lambda_role" {
   })
 
   tags = {
-  Name        = "ingestion-lambda-role"
-  Component   = "ingestion-lambda"
-  Environment = var.environment
+    Name        = "ingestion-lambda-role"
+    Component   = "ingestion-lambda"
+    Environment = var.environment
   }
 }
 
@@ -43,9 +43,9 @@ resource "aws_iam_role" "read_lambda_role" {
   })
 
   tags = {
-  Name        = "read-lambda-role"
-  Component   = "read-lambda"
-  Environment = var.environment
+    Name        = "read-lambda-role"
+    Component   = "read-lambda"
+    Environment = var.environment
   }
 
 }
@@ -55,7 +55,7 @@ resource "aws_iam_role" "read_lambda_role" {
 ############################
 
 resource "aws_iam_policy" "ingestion_dynamodb_policy" {
-  name = "ingestion-${var.environment}-dynamodb-policy"
+  name        = "ingestion-${var.environment}-dynamodb-policy"
   description = "Allow ingestion lambda to write events"
 
   policy = jsonencode({
@@ -73,7 +73,7 @@ resource "aws_iam_policy" "ingestion_dynamodb_policy" {
 }
 
 resource "aws_iam_policy" "read_dynamodb_policy" {
-  name = "read-${var.environment}-dynamodb-policy"
+  name        = "read-${var.environment}-dynamodb-policy"
   description = "Allow read lambda to read events"
 
   policy = jsonencode({

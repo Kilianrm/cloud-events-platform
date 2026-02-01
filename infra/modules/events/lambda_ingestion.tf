@@ -62,9 +62,9 @@ resource "aws_lambda_function" "ingestion" {
   }
 
   tags = {
-  Name        = "ingestion-lambda"
-  Component   = "ingestion-lambda"
-  Environment = var.environment
+    Name        = "ingestion-lambda"
+    Component   = "ingestion-lambda"
+    Environment = var.environment
   }
 
 
