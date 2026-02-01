@@ -1,4 +1,4 @@
-## 2026-02-30 – Minimal API Gateway Responsibility
+## 2026-01-30 – Minimal API Gateway Responsibility
 
 **Decision**  
 Limit API Gateway responsibilities to routing and protocol handling.

@@ -1,4 +1,4 @@
-## 2026-02-28 – Synchronous HTTP API
+## 2026-01-30 – Synchronous HTTP API
 
 **Decision**  
 Expose the service via a synchronous HTTP API.

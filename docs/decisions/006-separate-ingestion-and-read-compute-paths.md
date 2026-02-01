@@ -1,4 +1,4 @@
-## 2026-02-28 – Separate Ingestion and Read Compute Paths
+## 2026-01-29 – Separate Ingestion and Read Compute Paths
 
 **Decision**  
 Use separate Lambda functions for ingestion and read operations.

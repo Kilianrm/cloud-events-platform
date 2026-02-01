@@ -1,4 +1,4 @@
-## 2026-02-28 – Decision-Making Approach
+## 2026-01-28 – Decision-Making Approach
 
 **Decision**  
 Use Architectural Decision Records (ADRs) to explicitly document

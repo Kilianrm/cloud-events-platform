@@ -1,4 +1,4 @@
-## 2026-02-28 – Event Envelope with Opaque Payload
+## 2026-01-28 – Event Envelope with Opaque Payload
 
 **Decision**  
 Define a strict event envelope while treating the event payload as opaque data.

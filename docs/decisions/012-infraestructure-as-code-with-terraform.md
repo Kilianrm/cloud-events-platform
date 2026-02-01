@@ -1,4 +1,4 @@
-## 2026-02-28 – Infrastructure as Code with Terraform
+## 2026-01-30 – Infrastructure as Code with Terraform
 
 **Decision**  
 Define all infrastructure using Terraform.

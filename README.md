@@ -13,6 +13,13 @@ The service acts as an authoritative store for accepted events and is designed
 to simulate a real-world internal platform deployed in a cloud environment.
 Business logic and domain-specific processing are intentionally out of scope.
 
+## Architecture Overview
+
+A high-level view of the deployed system and its main components
+can be found here:
+
+👉 [AWS System Architecture Map](docs/architecture/aws-service-mapping.md#aws-system-architecture-map.md)
+
 ## Key Characteristics
 
 - Event-centric ingestion model (events are immutable, append-only records)
@@ -70,9 +77,10 @@ The recommended entry point is the development environment.
 
 ### Prerequisites
 
-- Terraform
-- An AWS account
+- AWS account
 - AWS credentials configured locally
+- Terraform >= 1.14.4.
+- An existing S3 bucket named `cloud-events-terraform-state` for Terraform remote state storage.
 
 ### Deploying the infrastructure
 
@@ -87,6 +95,7 @@ terraform apply
 Once the deployment finishes, the following resources will be available:
 
 - API Gateway endpoints for event ingestion and event reading
+- Lambda functions implementing ingestion and read logic
 - DynamoDB table for event storage
 - Associated IAM roles and permissions
 
@@ -119,3 +128,24 @@ The current stable version of the project is `v1.0.0`.
 This release represents a closed and fully documented baseline of the system.
 Future improvements and extensions are intentionally planned outside the scope
 of this version.
+
+## Project Intent
+
+This repository was created as a learning and portfolio project with the goal
+of simulating the design and implementation of an internal platform service
+in a real-world cloud environment.
+
+The project intentionally starts from a minimal, well-scoped MVP, focusing on
+core responsibilities and clear architectural boundaries. From this baseline,
+the system is expected to evolve iteratively as new requirements emerge, adding
+layers of complexity in a controlled and deliberate manner.
+
+Each iteration is intended to reflect realistic platform evolution, where
+operational needs, scalability concerns, or reliability requirements drive
+new design decisions. Future versions will be shaped through documented
+architectural trade-offs rather than ad-hoc feature growth.
+
+This approach allows the project to serve both as a practical learning
+exercise and as a reference showcasing infrastructure design, architectural
+thinking, and disciplined system evolution.
+

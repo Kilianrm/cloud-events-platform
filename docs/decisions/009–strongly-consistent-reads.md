@@ -1,4 +1,4 @@
-## 2026-02-28 – Strongly Consistent Reads
+## 2026-01-29 – Strongly Consistent Reads
 
 **Decision**  
 Use strongly consistent reads when retrieving events.

@@ -1,4 +1,4 @@
-## 2026-02-28 – Key-Based Access Only
+## 2026-01-29 – Key-Based Access Only
 
 **Decision**  
 Restrict data access to direct lookups by event identifier.

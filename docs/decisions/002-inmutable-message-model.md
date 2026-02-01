@@ -1,6 +1,6 @@
 # ADR 002 – Immutable Message Model
 
-Date: 2026-02-28  
+Date: 2026-01-28  
 Status: Accepted
 
 ## Context

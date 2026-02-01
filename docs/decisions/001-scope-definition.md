@@ -1,6 +1,6 @@
 # ADR 001 – Project Scope Definition
 
-Date: 2026-02-28  
+Date: 2026-01-28  
 Status: Accepted
 
 ## Context

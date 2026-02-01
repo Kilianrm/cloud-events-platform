@@ -1,4 +1,4 @@
-## 2026-02-28 – No Anticipatory Versioning
+## 2026-01-30 – No Anticipatory Versioning
 
 **Decision**  
 Do not introduce explicit API or contract versioning at this stage.

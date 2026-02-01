@@ -1,4 +1,4 @@
-## 2026-02-28 – Idempotency Enforced at Persistence Layer
+## 2026-01-29 – Idempotency Enforced at Persistence Layer
 
 **Decision**  
 Enforce idempotent ingestion at the persistence layer using conditional writes.

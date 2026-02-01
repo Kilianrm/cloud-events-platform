@@ -1,6 +1,6 @@
 # ADR 004 – API Gateway Strategy
 
-Date: 2026-02-28  
+Date: 2026-01-28  
 Status: Accepted
 
 ## Context
