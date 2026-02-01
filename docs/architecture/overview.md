@@ -2,8 +2,6 @@
 
 ## Overview
 
-## Overview
-
 This system is a **serverless, cloud-native internal platform service**
 designed to ingest, validate, persist and expose immutable **events**
 in a durable and reliable way.
