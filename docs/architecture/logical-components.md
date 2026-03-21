@@ -27,3 +27,17 @@ Ensures:
 Provides durable, highly available storage with append-only semantics.
 
 ---
+
+### Observability Components
+
+#### Logging Component
+Captures execution logs from compute components for debugging and auditing purposes.
+
+#### Metrics Component
+Exposes operational and business metrics, including:
+- Accepted events
+- Rejected events
+
+Enables monitoring, alerting, and performance analysis of the system.
+
+---

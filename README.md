@@ -29,10 +29,11 @@ can be found here:
 - Infrastructure fully defined and reproducible using Terraform
 - Architectural decisions documented explicitly (ADRs)
 - Small, intentionally limited API surface
+- Centralized logging and metrics via CloudWatch log groups and custom metrics for enhanced observability and monitoring
 
 ## Project Scope
 
-### Included in v1.0
+### Included in v1.1
 
 - HTTP API for event ingestion
 - HTTP API for reading stored events
@@ -41,12 +42,12 @@ can be found here:
 - Basic CI setup (linting, formatting, and test execution)
 - Testing strategy with representative examples
 - Architectural documentation and decision records (ADRs)
+- Basic observability including structured logging, correlation IDs, and technical metrics (requests accepted/rejected) via Amazon CloudWatch
 
 ### Explicitly out of scope
 
 - Production-grade deployment hardening
 - Fully automated CI/CD pipelines
-- Monitoring, alerting, and observability tooling
 - Advanced scalability or performance tuning
 - Multi-environment or multi-account AWS setups
 

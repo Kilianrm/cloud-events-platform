@@ -56,6 +56,7 @@ subgraph COMPONENTS["⚙️ Component Design"]
   ING[Ingestion Lambda]
   READ[Read Lambda]
   DB[DynamoDB]
+  CW[CloudWatch]
 end
 
 
@@ -143,6 +144,11 @@ Documents persistence-related components and their design constraints.
 
 - [DynamoDB](components/dynamodb.md)
 
+### Observability Components
+
+Documents components responsible for monitoring, logging, and operational visibility.
+
+- [CloudWatch](components/cloudwatch.md)
 ---
 
 ## Cloud Mapping

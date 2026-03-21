@@ -9,7 +9,7 @@ the logical architecture.
 | Ingestion Interface  | API Gateway + Lambda|
 | Read Interface   | API Gateway + Lambda|
 | Persistence      | DynamoDB |
-
+| Monitoring / Logging | CloudWatch|
 ---
 
 
@@ -29,6 +29,16 @@ flowchart LR
         end
 
         DB["DynamoDB"]
+
+        subgraph CW["CloudWatch"]
+            LG1["Log Group - Ingestion"]
+            LG2["Log Group - Read"]
+
+            subgraph Metrics["Metrics"]
+                Accepted["Accepted"]
+                Rejected["Rejected"]
+            end
+        end
     end
 
     Client -->|HTTP| APIGW
@@ -38,6 +48,12 @@ flowchart LR
 
     Ingest -->|write| DB
     Read -->|read| DB
+
+    Ingest -->|logs| LG1
+    Read -->|logs| LG2
+
+    LG1 --> Metrics
+    LG2 --> Metrics
 
 ```
 
@@ -70,3 +86,9 @@ and an AWS Lambda function.
 
 - [API Gateway](../components/api-gateway.md)
 - [Read Lambda](../components/read-lambda.md)
+
+## Monitoring / Logging Mapping
+
+The Monitoring and Logging component uses Amazon CloudWatch to collect metrics and logs, providing visibility into system health and performance.
+
+- [CloudWatch](../components/cloudwatch.md)
