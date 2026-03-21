@@ -1,16 +1,32 @@
 import json
+import logging
 from ingestion.validation import validate_event
 from ingestion.persistence import persist_event
 from ingestion.errors import ValidationError, EventAlreadyExists
 from shared.response import response
-
+from shared.logging_utils import log, get_correlation_id
 
 def handler(event, context):
-    print("Ingestion lambda invoked")
+    correlation_id = get_correlation_id(event)
+    event_id = None
+
+    log(
+        "Ingestion request received",
+        level="info",
+        correlation_id=correlation_id,
+        status="received",
+        path=event.get("path"),
+        method=event.get("httpMethod"),
+    )
 
     try:
         if not event.get("body"):
-            print("Invalid request: missing body")
+            log(
+                "Request rejected: missing body",
+                level="error",
+                correlation_id=correlation_id,
+                status="rejected"
+            )
             return response(
                 400,
                 {"error": "InvalidRequest", "message": "Request body is required"},
@@ -19,12 +35,24 @@ def handler(event, context):
         body = json.loads(event["body"])
         event_id = body.get("event_id")
 
-        print(f"Ingesting event_id={event_id}")
+        log(
+            "Processing event",
+            level = "info",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status="processing",
+        )
 
         validate_event(body)
         persist_event(body)
 
-        print(f"Event accepted event_id={event_id}")
+        log(
+            "Request accepted",
+            level="info",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status="accepted"
+        )
 
         return response(
             201,
@@ -32,21 +60,40 @@ def handler(event, context):
         )
 
     except ValidationError as e:
-        print(f"Validation failed event_id={event_id} error={e.message}")
+        log(
+            "Request rejected: validation failed",
+            level="error",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status= "rejected",
+        )
         return response(
             400,
             {"error": "InvalidEvent", "message": e.message},
         )
 
     except EventAlreadyExists:
-        print(f"Duplicate event event_id={event_id}")
+        log(
+            "Request accepted: already exists",
+            level="error",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status= "rejected",
+        )
         return response(
             200,
             {"event_id": event_id, "status": "already_exists"},
         )
 
     except Exception as e:
-        print(f"Unexpected error event_id={event_id} error={repr(e)}")
+        log(
+            "Internal error",
+            level="error",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status= "rejected",
+            error=repr(e)
+        )
         return response(
             500,
             {"error": "InternalError", "message": "An unexpected error occurred"},

@@ -2,15 +2,28 @@ from read.persistence import get_event
 from read.errors import EventNotFound
 from shared.response import response
 from shared.serialization import to_json_safe
+from shared.logging_utils import log, get_correlation_id
 
 
 def handler(event, context):
-    print("Read lambda invoked")
+    correlation_id = get_correlation_id(event)
+    event_id = None
 
+    log("Read request received",
+        level="info",
+        correlation_id=correlation_id,
+        status="received",
+        path=event.get("path"),
+        method=event.get("httpMethod"))
     try:
         path_params = event.get("pathParameters")
         if not path_params or "event_id" not in path_params:
-            print("Missing path parameter: event_id")
+            log(
+                "Request rejected: missing path parameter: event_id",
+                level="error",
+                correlation_id=correlation_id,
+                status="rejected"
+            )
             return response(
                 400,
                 {
@@ -20,11 +33,21 @@ def handler(event, context):
             )
 
         event_id = path_params["event_id"]
-        print(f"Fetching event_id={event_id}")
-
+        log(
+            "Fetching event",
+            level = "info",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status="fetching",
+        )
         item = get_event(event_id)
-
-        print(f"Event found event_id={event_id}")
+        log(
+            "Event found",
+            level="info",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status="accepted"
+        )
 
         return response(
             200,
@@ -32,7 +55,14 @@ def handler(event, context):
         )
 
     except EventNotFound:
-        print(f"Event not found event_id={event_id}")
+        log(
+            "Event not found",
+            level="error",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status="rejected"
+        )
+        
         return response(
             404,
             {
@@ -42,7 +72,14 @@ def handler(event, context):
         )
 
     except Exception as e:
-        print("READ ERROR:", repr(e))
+        log(
+            "Unexpected error during read",
+            level="error",
+            correlation_id=correlation_id,
+            event_id=event_id,
+            status= "rejected",
+            error=repr(e)
+        )
         return response(
             500,
             {
