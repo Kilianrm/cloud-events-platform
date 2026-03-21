@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 API_URL=$(terraform output -raw api_base_url)
-EVENT_ID="evt-3"
+EVENT_ID="evt-4"
 
 echo "📤 Sending event..."
 curl -s -X POST "$API_URL/events" \
