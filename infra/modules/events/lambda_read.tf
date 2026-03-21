@@ -31,6 +31,12 @@ data "archive_file" "read_lambda_zip" {
     content  = file("${var.app_path}/shared/time.py")
     filename = "shared/time.py"
   }
+
+  source {
+    content  = file("${var.app_path}/shared/logging_utils.py")
+    filename = "shared/logging_utils.py"
+  }
+  
 }
 
 ################################

@@ -1,3 +1,5 @@
+# Responsible of create the Lambda.
+
 data "archive_file" "ingestion_lambda_zip" {
   type        = "zip"
   output_path = "${path.module}/build/ingestion.zip"
@@ -35,6 +37,10 @@ data "archive_file" "ingestion_lambda_zip" {
   source {
     content  = file("${var.app_path}/shared/time.py")
     filename = "shared/time.py"
+  }
+  source {
+    content  = file("${var.app_path}/shared/logging_utils.py")
+    filename = "shared/logging_utils.py"
   }
 
 
