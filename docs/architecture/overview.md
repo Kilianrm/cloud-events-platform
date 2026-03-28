@@ -15,6 +15,11 @@ interpreted, validated or transformed by the core system.
 The system acts as an internal, authoritative store for accepted events.
 Business logic and domain-specific processing are explicitly out of scope.
 
+The platform enforces strict **security and access control**. Only
+authenticated clients can submit or read events, and access is controlled
+according to authorization policies, including rate limiting and quotas.
+Security responsibilities are implemented without introducing business logic
+or transforming event payloads.
 
 ---
 
@@ -53,6 +58,9 @@ These concerns are intentionally excluded from the core architecture.
 
 They may be addressed by future system extensions or external services,
 but are not considered architectural responsibilities of the core platform.
+
+Note: While the system does not implement domain-level business authorization,
+technical authentication and access control for system endpoints are enforced.
 
 ---
 

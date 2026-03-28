@@ -4,58 +4,110 @@ This section describes how logical components are realized using AWS services.
 These mappings are implementation choices and may evolve independently from
 the logical architecture.
 
-| Logical Component | AWS Service |
-|------------------|-------------|
-| Ingestion Interface  | API Gateway + Lambda|
-| Read Interface   | API Gateway + Lambda|
-| Persistence      | DynamoDB |
-| Monitoring / Logging | CloudWatch|
+| Logical Component               | AWS Service / Feature                                                   |
+| ------------------------------- | ----------------------------------------------------------------------- |
+| Ingestion Interface     | API Gateway  + Lambda (Input Validation) |
+| Read Interface          | API Gateway  + Lambda (Input Validation) |
+| Persistence                     | DynamoDB                                                                |
+| Monitoring / Logging            | CloudWatch (Log Groups, Metrics)                                        |
+| Authentication Interface        | API Gateway + Auth Lambda (JWT Issuer) + Secrets Manager               |
+| Authorization & Traffic Control | API Gateway + Lambda Authorizer (JWT Validator + Rate Limiting / Throttling / Quotas) + Secrets manager |
+
+
 ---
 
 
 ## AWS System Architecture Map
 
-
 ```mermaid
 flowchart LR
-    Client["Client"]
+    Client["Internal Client"]
 
     subgraph AWS["AWS Cloud"]
+
+        %% Single API Gateway
         APIGW["API Gateway"]
         
-        subgraph Compute["Compute"]
-            Ingest["Ingestion Lambda"]
+        ASM["Secrets Manager"]
+
+        %% --- Authentication Flow ---
+        subgraph AuthFlow["Authentication"]
+            JWTI["Authentication Lambda"]
+            ASM["Secrets Manager"]
+        end
+
+        %% --- Authorization Flow ---
+        subgraph AuthoFlow["Authorization && Trafic Control"]
+            LAW["Authorization Lambda"]
+            ASMB["Secrets Manager"]
+
+        end
+
+        %% --- Business Flow ---
+        subgraph BizFlow["Business"]
+            
+            Ingest["Ingest Lambda"]
             Read["Read Lambda"]
         end
 
+        %% Database
         DB["DynamoDB"]
 
-        subgraph CW["CloudWatch"]
-            LG1["Log Group - Ingestion"]
-            LG2["Log Group - Read"]
+        %% Logging & Metrics
+        subgraph Monitoring["CloudWatch"]
+            LGSec["Security Logs"]
+            LG1["Ingest Logs"]
+            LG2["Read Logs"]
 
             subgraph Metrics["Metrics"]
-                Accepted["Accepted"]
-                Rejected["Rejected"]
+                Accepted["Accepted Requests"]
+                Rejected["Rejected Requests"]
+                SecurityEvents["Security Events"]
             end
         end
+
     end
 
-    Client -->|HTTP| APIGW
+    %% --- Authentication Flow ---
+    Client -->|POST /auth/token client_id + secret | APIGW
+    APIGW --> |POST /auth/token client_id + secret | JWTI
+    JWTI -->|validate client_id + secret | ASM
+    JWTI -->|return JWT| APIGW
+    APIGW --> Client
 
+    %% --- Authorization && traffic control ---
+    APIGW --> LAW
+    LAW --> | validate JWT | ASMB
+    LAW -->|allow / deny| APIGW
+
+
+    %% --- Business Flow ---
+    Client -->|Authorization: Bearer JWT| APIGW
+
+
+    %% Possible outcomes
+    APIGW -->|400,401,404,413,429,500| Client
+    APIGW -->|200,201| Client
     APIGW -->|POST /events| Ingest
     APIGW -->|GET /events| Read
 
+    %% Database interactions
     Ingest -->|write| DB
     Read -->|read| DB
 
-    Ingest -->|logs| LG1
-    Read -->|logs| LG2
+    %% Logging
+    APIGW --> LGSec
+    JWTI --> LGSec
+    LAW --> LGSec
+    Ingest --> LG1
+    Read --> LG2
 
+    %% Metrics
     LG1 --> Metrics
     LG2 --> Metrics
-
+    LGSec --> Metrics
 ```
+
 
 ## Persistence Mapping
 
@@ -92,3 +144,15 @@ and an AWS Lambda function.
 The Monitoring and Logging component uses Amazon CloudWatch to collect metrics and logs, providing visibility into system health and performance.
 
 - [CloudWatch](../components/cloudwatch.md)
+
+## Authentication Interface
+The authentication component is implemented using AWS API Gateway, AWS lambda and AWS Secrets Manager
+- [API Gateway](../components/api-gateway.md)
+- [Authentication Lambda](../components/authentication-lambda.md)
+- [Secrets Manager](../components/secrets-manager.md)
+
+## Authorization & Traffic Control
+The authorization and traffic control is implemented using AWS API Gateway, AWS lambda and Secrets Manager
+- [API Gateway](../components/api-gateway.md)
+- [Authorization Lambda](../components/authorization-lambda.md)
+- [Secrets Manager](../components/secrets-manager.md)

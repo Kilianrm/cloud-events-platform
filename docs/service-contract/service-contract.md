@@ -86,6 +86,17 @@ The service does NOT guarantee event ordering.
 
 ---
 
+## Access Requirements
+
+This service is protected and can only be accessed by authenticated and authorized clients.
+
+Clients that are not authorized will not be able to ingest or read events.
+
+The exact mechanism for authentication and authorization is defined externally
+and is not part of this service contract.
+
+---
+
 ## Non-Goals
 
 The service explicitly does NOT provide:

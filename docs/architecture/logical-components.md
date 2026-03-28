@@ -41,3 +41,17 @@ Exposes operational and business metrics, including:
 Enables monitoring, alerting, and performance analysis of the system.
 
 ---
+
+### Security / Access Control Components
+
+#### Authentication Component
+Responsible for verifying the identity of clients before granting access to system resources. Ensures:
+- Clients provide valid credentials (e.g., client_id + secret)  
+- JWT tokens are issued for valid clients  
+- Integration with secure secret storage for credential management  
+
+#### Authorization Component
+Controls access and enforces traffic rules for authenticated clients. Ensures:
+- Valid JWT tokens are checked before allowing operations  
+- Rate limiting, quotas, and throttling policies are applied  
+- Requests are allowed or denied based on roles or permissions  
