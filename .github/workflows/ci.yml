@@ -4,27 +4,9 @@ on:
   push:
     branches: ["main"]
   pull_request:
-  workflow_dispatch:
-    inputs:
-      run_integration:
-        description: "Run integration tests?"
-        required: true
-        default: "no"
-        type: choice
-        options:
-          - yes
-          - no
-      run_e2e:
-        description: "Run e2e tests?"
-        required: true
-        default: "no"
-        type: choice
-        options:
-          - yes
-          - no
 jobs:
   tests:
-    name: Run Python tests
+    name: Unit Tests
     runs-on: ubuntu-latest
     env:
       AWS_DEFAULT_REGION: us-east-1
@@ -47,17 +29,6 @@ jobs:
       - name: Run unit tests
         run: |
            PYTHONPATH=app pytest app/tests/unit -m "not integration and not e2e" -v
-      # Run integration tests only if manual and input is yes
-      - name: Run integration tests
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_integration == 'yes' }}
-        run: |
-          PYTHONPATH=app pytest -m integration -v
-
-      # Run e2e tests only if manual and input is yes
-      - name: Run e2e tests
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_e2e == 'yes' }}
-        run: |
-          PYTHONPATH=app pytest -m e2e -v
 
   terraform:
     name: Terraform validate and plan (${{ matrix.env }})
