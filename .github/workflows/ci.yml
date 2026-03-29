@@ -4,11 +4,30 @@ on:
   push:
     branches: ["main"]
   pull_request:
-
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: "Run integration tests?"
+        required: true
+        default: "no"
+        type: choice
+        options:
+          - yes
+          - no
+      run_e2e:
+        description: "Run e2e tests?"
+        required: true
+        default: "no"
+        type: choice
+        options:
+          - yes
+          - no
 jobs:
   tests:
     name: Run Python tests
     runs-on: ubuntu-latest
+    env:
+      AWS_DEFAULT_REGION: us-east-1
 
     steps:
       - name: Checkout repository
@@ -22,12 +41,23 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest boto3 moto
+          pip install pytest==9.0.2 boto3==1.42.72 moto==5.1.22 PyJWT==2.12.1
 
-      - name: Run tests
+      # Always run unit tests
+      - name: Run unit tests
         run: |
-          PYTHONPATH=app pytest app/tests -v
+           PYTHONPATH=app pytest app/tests/unit -m "not integration and not e2e" -v
+      # Run integration tests only if manual and input is yes
+      - name: Run integration tests
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_integration == 'yes' }}
+        run: |
+          PYTHONPATH=app pytest -m integration -v
 
+      # Run e2e tests only if manual and input is yes
+      - name: Run e2e tests
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_e2e == 'yes' }}
+        run: |
+          PYTHONPATH=app pytest -m e2e -v
 
   terraform:
     name: Terraform validate and plan (${{ matrix.env }})
@@ -58,4 +88,3 @@ jobs:
       - name: Terraform Validate
         working-directory: infra/envs/${{ matrix.env }}
         run: terraform validate
-

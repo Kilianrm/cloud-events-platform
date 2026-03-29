@@ -27,6 +27,14 @@ def handler(event: dict, context) -> dict:
     client_id = body.get("client_id")
     client_secret = body.get("client_secret")
 
+    # Validate if body is empty:
+    if not client_id or not client_secret:
+        # Body vacío o campos faltantes
+        return {
+            "statusCode": 401,
+            "body": json.dumps({"error": "invalid_client"})
+        }
+    
     # Retrieve client data from Secrets Manager
     client_data = get_client_data(client_id)
     if not client_data:
