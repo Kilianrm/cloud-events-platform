@@ -11,7 +11,7 @@ the logical architecture.
 | Persistence                     | DynamoDB                                                                |
 | Monitoring / Logging            | CloudWatch (Log Groups, Metrics)                                        |
 | Authentication Interface        | API Gateway + Auth Lambda (JWT Issuer) + Secrets Manager               |
-| Authorization & Traffic Control | API Gateway + Lambda Authorizer (JWT Validator + Rate Limiting / Throttling / Quotas) + Secrets manager |
+| Authorization & Traffic Control | API Gateway(Rate Limiting / Throttling) + Lambda Authorizer (JWT Validator) + Secrets manager |
 
 
 ---
@@ -150,10 +150,8 @@ The Monitoring and Logging component uses Amazon CloudWatch to collect metrics a
 The authentication component is implemented using AWS API Gateway, AWS lambda and AWS Secrets Manager
 - [API Gateway](../components/api-gateway.md)
 - [Authentication Lambda](../components/authentication-lambda.md)
-- [Secrets Manager](../components/secrets-manager.md)
 
 ## Authorization & Traffic Control
 The authorization and traffic control is implemented using AWS API Gateway, AWS lambda and Secrets Manager
 - [API Gateway](../components/api-gateway.md)
 - [Authorization Lambda](../components/authorization-lambda.md)
-- [Secrets Manager](../components/secrets-manager.md)

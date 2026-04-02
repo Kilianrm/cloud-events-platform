@@ -29,8 +29,8 @@ resource "aws_cloudwatch_log_group" "authorization_logs" {
 ####################
 # Ingestion Metrics
 ####################
-resource "aws_cloudwatch_log_metric_filter" "ingestion_accepted" {
-  name           = "IngestionAccepted"
+resource "aws_cloudwatch_log_metric_filter" "ingestion_accepted_filter" {
+  name           = "IngestionAcceptedFilter"
   log_group_name = aws_cloudwatch_log_group.ingestion_logs.name
   pattern        = "{ $.status = \"accepted\" }"
 
@@ -42,8 +42,8 @@ resource "aws_cloudwatch_log_metric_filter" "ingestion_accepted" {
   }
 }
 
-resource "aws_cloudwatch_log_metric_filter" "ingestion_rejected" {
-  name           = "IngestionRejected"
+resource "aws_cloudwatch_log_metric_filter" "ingestion_rejected_filter" {
+  name           = "IngestionRejectedFilter"
   log_group_name = aws_cloudwatch_log_group.ingestion_logs.name
   pattern        = "{ $.status = \"rejected\" }"
 
@@ -58,8 +58,8 @@ resource "aws_cloudwatch_log_metric_filter" "ingestion_rejected" {
 ####################
 # Read Metrics
 ####################
-resource "aws_cloudwatch_log_metric_filter" "read_accepted" {
-  name           = "ReadAccepted"
+resource "aws_cloudwatch_log_metric_filter" "read_accepted_filter" {
+  name           = "ReadAcceptedFilter"
   log_group_name = aws_cloudwatch_log_group.read_logs.name
   pattern        = "{ $.status = \"accepted\" }"
 
@@ -71,13 +71,67 @@ resource "aws_cloudwatch_log_metric_filter" "read_accepted" {
   }
 }
 
-resource "aws_cloudwatch_log_metric_filter" "read_rejected" {
-  name           = "ReadRejected"
+resource "aws_cloudwatch_log_metric_filter" "read_rejected_filter" {
+  name           = "ReadRejectedFilter"
   log_group_name = aws_cloudwatch_log_group.read_logs.name
   pattern        = "{ $.status = \"rejected\" }"
 
   metric_transformation {
     name      = "RequestsRejected"
+    namespace = "MyApp/Lambda"
+    value     = "1"
+    unit      = "Count"
+  }
+}
+
+## AUTHORIZATION 
+resource "aws_cloudwatch_log_metric_filter" "authorization_allow_filter" {
+  name           = "AuthorizationAllowFilter"
+  log_group_name = aws_cloudwatch_log_group.authorization_logs.name
+  pattern        = "{ $.status = \"authorized\" && $.effect = \"Allow\" }"
+
+  metric_transformation {
+    name      = "AuthorizationAllow"
+    namespace = "MyApp/Lambda"
+    value     = "1"
+    unit      = "Count"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "authorization_deny_filter" {
+  name           = "AuthorizationDenyFilter"
+  log_group_name = aws_cloudwatch_log_group.authorization_logs.name
+  pattern        = "{ $.status = \"denied\" }"
+
+  metric_transformation {
+    name      = "AuthorizationDeny"
+    namespace = "MyApp/Lambda"
+    value     = "1"
+    unit      = "Count"
+  }
+}
+
+## AUTHENTICATION
+resource "aws_cloudwatch_log_metric_filter" "authentication_success_filter" {
+  name           = "AuthenticationSuccessFilter"
+  log_group_name = aws_cloudwatch_log_group.authentication_logs.name
+  pattern        = "{ $.status = \"validated\" }"
+
+  metric_transformation {
+    name      = "AuthenticationSuccess"
+    namespace = "MyApp/Lambda"
+    value     = "1"
+    unit      = "Count"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "authentication_rejected_filter" {
+  name           = "AuthenticationRejectedFilter"
+  log_group_name = aws_cloudwatch_log_group.authentication_logs.name
+  pattern        = "{ $.status = \"rejected\" }"
+
+  metric_transformation {
+    name      = "AuthenticationRejected"
     namespace = "MyApp/Lambda"
     value     = "1"
     unit      = "Count"
