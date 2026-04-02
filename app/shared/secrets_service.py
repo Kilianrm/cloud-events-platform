@@ -12,7 +12,7 @@ def get_secrets_client():
     return boto3.client("secretsmanager")
 
 
-def get_client_data(client_id: str) -> dict | None:
+def get_client_data(client_id: str,client_secret_prefix="auth/client/") -> dict | None:
     """
     Retrieves client data from AWS Secrets Manager.
 
@@ -28,7 +28,7 @@ def get_client_data(client_id: str) -> dict | None:
     sm_client = get_secrets_client()
     try:
         secret_response = sm_client.get_secret_value(
-            SecretId=f"auth/client/{client_id}"
+            SecretId=f"{client_secret_prefix}{client_id}"
         )
         return json.loads(secret_response["SecretString"])
     except sm_client.exceptions.ResourceNotFoundException:
@@ -36,7 +36,7 @@ def get_client_data(client_id: str) -> dict | None:
         return None
 
 
-def get_jwt_secret() -> str:
+def get_jwt_secret(SecretId="auth/jwt_secret") -> str:
     """
     Retrieves the JWT signing secret from AWS Secrets Manager.
 
@@ -50,5 +50,5 @@ def get_jwt_secret() -> str:
         botocore.exceptions.ClientError: If the secret does not exist or access is denied.
     """
     sm_client = get_secrets_client()
-    secret_response = sm_client.get_secret_value(SecretId="auth/jwt_secret")
+    secret_response = sm_client.get_secret_value(SecretId=SecretId)
     return secret_response["SecretString"]

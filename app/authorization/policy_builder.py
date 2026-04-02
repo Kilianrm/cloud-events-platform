@@ -12,3 +12,4 @@ def build_policy(principal_id: str, effect: str, resource: str) -> dict:
             ],
         },
     }
+    
