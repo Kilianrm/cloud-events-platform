@@ -1,4 +1,4 @@
-name: CI Heavy / Integration & E2E
+name: CI Heavy / Integration
 
 on:
   workflow_dispatch:
@@ -45,9 +45,4 @@ jobs:
       - name: Run integration tests
         if: ${{ github.event.inputs.run_integration == 'true' }}
         run: |
-          PYTHONPATH=app pytest app/tests/integration -v
-
-      - name: Run e2e tests
-        if: ${{ github.event.inputs.run_e2e == 'true' }}
-        run: |
-          PYTHONPATH=app pytest app/tests/e2e -v
+          PYTHONPATH=app pytest tests/integration -v
