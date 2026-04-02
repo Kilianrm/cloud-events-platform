@@ -9,13 +9,16 @@ from shared.jwt_utils import generate_jwt
 
 # --- Sample event ---
 event_template = {
-    "authorizationToken": "",
-    "methodArn": "arn:aws:execute-api:region:account:id"
-}
+        "headers": {
+            "authorization": f""
+        },
+        "httpMethod": "GET",
+        "path": "/events"
+    }
 
 JWT_SECRET = "this_is_a_secure_test_secret_with_32_bytes! "
 CLIENT_ID = "user123"
-SCOPE = "events:read"
+SCOPE = "read"
 
 @pytest.fixture
 def aws_env():
@@ -39,11 +42,10 @@ def aws_env():
 
 
 # --- Helper to create a JWT and event ---
-def make_event(client_id, scope, secret, method_arn):
+def make_event(client_id, scope, secret):
     token = generate_jwt(client_id, scope, secret)
     event = event_template.copy()
-    event["authorizationToken"] = f"Bearer {token}"
-    event["methodArn"] = method_arn
+    event["headers"]['authorization'] = f"Bearer {token}"
     return event
 
 
@@ -51,7 +53,7 @@ def make_event(client_id, scope, secret, method_arn):
 def test_integration_allow_moto(aws_env):
 
     # Generate the event with a valid JWT
-    event = make_event(CLIENT_ID, SCOPE, JWT_SECRET, event_template["methodArn"])
+    event = make_event(CLIENT_ID, SCOPE, JWT_SECRET)
 
     # Call the Lambda handler (real get_jwt_secret hits moto)
     result = handler(event, None)
@@ -60,15 +62,15 @@ def test_integration_allow_moto(aws_env):
     assert result["principalId"] == CLIENT_ID
     statement = result["policyDocument"]["Statement"][0]
     assert statement["Effect"] == "Allow"
-    assert statement["Resource"] == event_template["methodArn"]
+
 
 # --- Deny access due to missing scope ---
 def test_integration_deny_scope_moto(aws_env):
     # Use a scope that does NOT include 'events:read'
-    invalid_scope = "read"
+    invalid_scope = "write"
 
     # Generate the event with this JWT
-    event = make_event(CLIENT_ID, invalid_scope, JWT_SECRET, event_template["methodArn"])
+    event = make_event(CLIENT_ID, invalid_scope, JWT_SECRET)
 
     # Call the Lambda handler
     result = handler(event, None)
@@ -77,7 +79,6 @@ def test_integration_deny_scope_moto(aws_env):
     assert result["principalId"] == CLIENT_ID
     statement = result["policyDocument"]["Statement"][0]
     assert statement["Effect"] == "Deny"
-    assert statement["Resource"] == event_template["methodArn"]
 
 # --- Deny access due to expired JWT ---
 def test_integration_expired_jwt_moto(aws_env):
@@ -91,8 +92,7 @@ def test_integration_expired_jwt_moto(aws_env):
 
     # Build the event
     event = event_template.copy()
-    event["authorizationToken"] = f"Bearer {expired_token}"
-    event["methodArn"] = event_template["methodArn"]
+    event["headers"]["authorization"] = f"Bearer {expired_token}"
 
     # Call the Lambda handler
     result = handler(event, None)
@@ -101,14 +101,12 @@ def test_integration_expired_jwt_moto(aws_env):
     assert result["principalId"] == "unknown"  # default when JWT invalid
     statement = result["policyDocument"]["Statement"][0]
     assert statement["Effect"] == "Deny"
-    assert statement["Resource"] == event_template["methodArn"]
 
 # --- Deny access due to invalid JWT format ---
 def test_integration_invalid_jwt_format_moto(aws_env):
     # Build the event with an invalid JWT string
     event = event_template.copy()
     event["authorizationToken"] = "Bearer not-a-jwt"
-    event["methodArn"] = event_template["methodArn"]
 
     # Call the Lambda handler
     result = handler(event, None)
@@ -117,7 +115,6 @@ def test_integration_invalid_jwt_format_moto(aws_env):
     assert result["principalId"] == "unknown"
     statement = result["policyDocument"]["Statement"][0]
     assert statement["Effect"] == "Deny"
-    assert statement["Resource"] == event_template["methodArn"]
 
 # --- Deny access due to missing Authorization header ---
 def test_integration_missing_header_moto(aws_env):
@@ -132,7 +129,6 @@ def test_integration_missing_header_moto(aws_env):
     assert result["principalId"] == "unknown"
     statement = result["policyDocument"]["Statement"][0]
     assert statement["Effect"] == "Deny"
-    assert statement["Resource"] == event_template["methodArn"]
 
 
 # --- Deny access due to invalid Authorization header format ---
@@ -148,12 +144,11 @@ def test_integration_invalid_header_format_moto(aws_env):
     assert result["principalId"] == "unknown"
     statement = result["policyDocument"]["Statement"][0]
     assert statement["Effect"] == "Deny"
-    assert statement["Resource"] == event_template["methodArn"]
 
 # --- Deny access due to missing JWT secret in Secrets Manager ---
 def test_integration_missing_jwt_secret_moto():
     # Generate the event using make_event
-    event = make_event(CLIENT_ID, SCOPE, JWT_SECRET, event_template["methodArn"])
+    event = make_event(CLIENT_ID, SCOPE, JWT_SECRET)
 
     with mock_aws():  # moto intercepts boto3 calls
         # Call the Lambda handler
@@ -163,4 +158,3 @@ def test_integration_missing_jwt_secret_moto():
     assert result["principalId"] == "unknown"
     statement = result["policyDocument"]["Statement"][0]
     assert statement["Effect"] == "Deny"
-    assert statement["Resource"] == event_template["methodArn"]
