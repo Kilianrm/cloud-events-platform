@@ -19,3 +19,10 @@ variable "app_path" {
   type        = string
 }
 
+variable "jwt_secret_name" {
+  type = string
+}
+
+variable "client_secret_prefix" {
+  type = string
+}

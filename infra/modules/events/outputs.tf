@@ -11,6 +11,20 @@ output "read_lambda_name" {
   value = aws_lambda_function.read.function_name
 }
 
+output "authentication_lambda_name" {
+  value = aws_lambda_function.authentication.function_name
+}
+
 output "dynamodb_table_name" {
   value = aws_dynamodb_table.events.name
+}
+
+output "pyjwt_layer_arn" {
+  value       = aws_lambda_layer_version.pyjwt_layer.arn
+  description = "ARN of the PyJWT Lambda Layer"
+}
+
+output "authorization_lambda_arn" {
+  value       = aws_lambda_function.authorization.arn
+  description = "ARN of the Authorization Lambda"
 }

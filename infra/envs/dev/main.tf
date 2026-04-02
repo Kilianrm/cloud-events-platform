@@ -31,6 +31,8 @@ module "events" {
   environment = local.environment
   aws_region  = local.region
   app_path    = local.app_path
+  jwt_secret_name      = "auth/jwt_secret"
+  client_secret_prefix = "auth/client/"
 }
 
 output "api_base_url" {
