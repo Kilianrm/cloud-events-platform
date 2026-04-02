@@ -6,15 +6,21 @@ Infrastructure is validated but not functionally tested.
 ## Application tests
 
 ### Unit tests
-- Located under `app/tests/unit`
+- Located under `tests/unit`
 - Business logic is tested in isolation
 - AWS services are mocked using `moto`
 - No AWS credentials required
 
 ### Integration tests
-- Validate ingestion and read flows at code level
+- Located under `tests/integration`
+- Validate flows at code level
 - Lambda handlers are executed locally
 - Still fully isolated from real AWS services
+
+### E2E Tests
+- Located under `tests/e2e`
+- Validate end-to-end flows against the fully deployed system
+- Interact with real AWS services (test the live deployment)
 
 ## Infrastructure validation
 

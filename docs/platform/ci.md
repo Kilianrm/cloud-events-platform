@@ -1,10 +1,16 @@
-## CI pipeline
+## CI Pipeline
 
-The CI pipeline automates validation and quality checks for both application code and infrastructure definitions.
+The CI pipeline automates validation for application code and infrastructure.
 
-### Jobs
-- Application build and automated tests
-- Infrastructure validation (formatting and static checks)
+### Automatic Pipeline
+- **Triggers:** push to `main` and pull requests
+- **Jobs:**
+  - Unit tests (Python 3.11, pytest, boto3, moto, PyJWT)
+  - Terraform validate & plan for `dev` and `prod` (init, fmt -check, validate)
+- **Note:** No resources are deployed; validation is non-destructive.
 
-The CI pipeline does not deploy resources and does not interact with remote backends.  
-Infrastructure code is validated using non-destructive commands (such as formatting and validation) to ensure consistency and correctness without requiring credentials.
+### Manual 'CI Heavy / Integration' Workflow
+- **Triggered manually** via workflow_dispatch
+- **Inputs:** run_integration (yes/no), run_e2e (yes/no)
+- **Job:** Integration and E2E tests
+  - E2E tests run against the API Gateway defined in `tests/e2e/conftest.py`"

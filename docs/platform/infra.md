@@ -7,6 +7,7 @@ The design follows a modular, multi-environment approach.
 - Lambda functions
 - DynamoDB tables
 - API Gateway
+- CloudWatch
 
 ## Environments
 The infrastructure is deployed to two isolated environments:

@@ -55,7 +55,9 @@ flowchart LR
 
         %% Logging & Metrics
         subgraph Monitoring["CloudWatch"]
-            LGSec["Security Logs"]
+            LGSec["Api Gateway Logs"]
+            LGAuthentication["Authentication Logs"]
+            LGAuthorization["Authorization Logs"]
             LG1["Ingest Logs"]
             LG2["Read Logs"]
 
@@ -97,11 +99,10 @@ flowchart LR
 
     %% Logging
     APIGW --> LGSec
-    JWTI --> LGSec
-    LAW --> LGSec
+    JWTI --> LGAuthentication
+    LAW --> LGAuthorization
     Ingest --> LG1
     Read --> LG2
-
     %% Metrics
     LG1 --> Metrics
     LG2 --> Metrics

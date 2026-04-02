@@ -2,14 +2,9 @@
 
 ## Overview
 
-This document describes the API Gateway component used to expose the
-service HTTP API defined in the API Contract.
+This document describes the API Gateway component used to expose the service HTTP API defined in the API Contract.
 
-API Gateway acts as a **boundary component** between external clients
-and the internal service implementation.
-
-Its responsibility is limited to request routing, basic protocol
-handling and integration with backend compute.
+API Gateway acts as a **boundary component** between external clients and the internal service implementation. It is responsible for request routing, basic protocol handling, and integration with backend compute.
 
 ---
 
@@ -20,7 +15,8 @@ API Gateway is responsible for:
 - Exposing the HTTP endpoints defined in the API Contract
 - Handling HTTP request and response semantics
 - Routing requests to the appropriate backend Lambda functions
-- Enforcing basic request size limits
+- Enforcing basic request size limits and throttling
+- Forwarding full request context to backend Lambdas
 
 API Gateway is NOT responsible for:
 
@@ -28,7 +24,6 @@ API Gateway is NOT responsible for:
 - Event validation beyond basic protocol checks
 - Idempotency enforcement
 - Persistence or data access
-- Authorization or authentication
 
 ---
 
@@ -38,40 +33,41 @@ The service uses **Amazon API Gateway – HTTP API**.
 
 ### Rationale
 
-HTTP APIs are selected because they:
+HTTP APIs were selected because they:
 
 - Provide low latency
 - Have a simple cost and operational model
 - Offer native integration with Lambda
 - Are sufficient for the required request/response interaction patterns
 
-Advanced API Gateway features such as request validation models,
-usage plans or API keys are intentionally not used.
+Advanced API Gateway features such as request validation models, usage plans, or API keys are intentionally not used.
 
 ---
 
-## API Structure
+## Base Path
 
-### Base Path
+All endpoints are exposed under the root path: `/`.
 
-All endpoints are exposed under the root path:
-
-/
-
-The API Gateway does not introduce any additional path structure
-beyond what is defined in the API Contract.
+The API Gateway does not introduce any additional path structure beyond what is defined in the API Contract.
 
 ---
 
 ## Endpoints
 
-API Gateway exposes the following routes, as defined in the API Contract:
+API Gateway exposes the following routes:
 
-- POST /events
-- GET  /events/{event_id}
+| Method | Path                | Protection           | Lambda Integration        |
+|--------|-------------------|-------------------|--------------------------|
+| POST   | /auth/token        | None (public)      | Authentication Lambda    |
+| POST   | /events            | JWT-protected      | Ingestion Lambda         |
+| GET    | /events/{event_id} | JWT-protected      | Read Lambda              |
 
-API Gateway does not alter request paths or payloads beyond
-basic protocol handling.
+Notes:
+
+- Routes `/events` and `/events/{event_id}` require a JWT validated via a **Lambda Authorizer**.
+- `/auth/token` is publicly accessible for authentication.
+- Path parameters such as `{event_id}` are forwarded to the backend Lambda.
+- No transformation is performed at the API Gateway layer.
 
 ---
 
@@ -79,16 +75,7 @@ basic protocol handling.
 
 ### Backend Integration
 
-Each endpoint is integrated with a dedicated AWS Lambda function:
-
-- POST /events → Ingestion Lambda
-- GET  /events/{event_id} → Read Lambda
-
-The integration uses **Lambda proxy integration**, allowing backend
-functions to receive the full request context and return structured
-HTTP responses.
-
----
+All endpoints use **Lambda proxy integration (AWS_PROXY)**, which allows the backend functions to receive the full request context.
 
 ### Request Handling
 
@@ -97,12 +84,10 @@ API Gateway forwards to Lambda:
 - HTTP method
 - Path parameters
 - Query parameters
-- Headers
+- Headers (including Authorization)
 - Raw JSON body
 
-No transformation or enrichment is performed at the API Gateway layer.
-
----
+No enrichment or modification is applied at the API Gateway.
 
 ### Response Handling
 
@@ -112,28 +97,56 @@ Lambda functions are responsible for:
 - Producing response bodies
 - Returning error responses consistent with the API Contract
 
-API Gateway forwards responses to clients without modification.
+API Gateway forwards responses directly to clients.
 
 ---
 
-## Limits and Timeouts
+## Security / Authorization
 
-### Request Size
-
-API Gateway enforces a maximum request payload size of 256 KB.
-
-Requests exceeding this limit are rejected at the boundary
-before reaching backend Lambda functions.
+- JWT authentication is enforced via a **REQUEST Lambda Authorizer**.
+- Identity source: `$request.header.Authorization`.
+- Protected routes: POST /events, GET /events/{event_id}.
+- Public routes: POST /auth/token.
 
 ---
 
-### Timeout
+## Stage Configuration
+
+- Stage name: `$default`
+- Auto-deploy: true
+
+### Throttling and Limits
+
+- **Burst limit**: 100 requests
+- **Rate limit**: 50 requests/second
+- Maximum request size: 256 KB
+- Purpose: protect backend Lambda from overload
+
+### Logging and Metrics
+
+- **Logging level**: INFO
+- **Data trace**: enabled (logs full request and response bodies)
+- **Detailed metrics**: enabled (CloudWatch advanced metrics)
+- **Access logs** include:
+  - requestId, extendedRequestId, requestTime
+  - HTTP method, path, routeKey, status
+  - Response length and latency
+  - Integration status, latency, and error messages
+  - Authorizer errors
+  - Client IP and User-Agent
+
+### CORS
+
+- Currently disabled (no browser frontend)
+- Can be enabled in the future if a frontend is required
+
+---
+
+## Timeouts
 
 - API Gateway timeout follows HTTP API defaults
 - Lambda timeouts are configured independently
-
-Timeouts are configured to avoid long-running requests
-at the boundary layer.
+- Purpose: avoid long-running requests at the boundary
 
 ---
 
@@ -143,25 +156,15 @@ API Gateway distinguishes between:
 
 - Client-side protocol errors (malformed HTTP requests)
 - Backend errors returned by Lambda
+- Authorizer errors (returned for unauthorized requests)
 
-All application-level errors are generated by backend Lambda
-functions and returned according to the API Contract.
-
----
-
-## Security Considerations
-
-The API Gateway does not enforce authentication or authorization.
-
-The service is intended for internal or controlled usage
-within a trusted environment.
+All application-level errors are generated by backend Lambda functions according to the API Contract.
 
 ---
 
 ## Relationship to Other Components
 
-- Invokes: Ingestion Lambda and Read Lambda
+- Invokes: Authentication Lambda, Ingestion Lambda, Read Lambda
 - Exposes: HTTP API defined by the API Contract
 - Does not maintain state
-
-API Gateway can be scaled independently of backend components.
+- Can be scaled independently of backend components"

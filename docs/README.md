@@ -57,6 +57,8 @@ subgraph COMPONENTS["⚙️ Component Design"]
   READ[Read Lambda]
   DB[DynamoDB]
   CW[CloudWatch]
+  AUTHE[Authenticator Lambda]
+  AUTHO[Authorization Lambda]
 end
 
 
@@ -149,6 +151,19 @@ Documents persistence-related components and their design constraints.
 Documents components responsible for monitoring, logging, and operational visibility.
 
 - [CloudWatch](components/cloudwatch.md)
+
+### Security / Access Control Components
+
+### Authentication Component
+Responsible for verifying the identity of clients before granting access to system resources.
+
+- [Authentication Lambda](components/authentication-lambda.md)
+
+### Authorization Component
+Controls access and enforces traffic rules for authenticated clients.
+
+- [Authorization Lambda](components/authorization-lambda.md)
+
 ---
 
 ## Cloud Mapping

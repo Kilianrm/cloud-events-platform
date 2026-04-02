@@ -35,8 +35,9 @@ Captures execution logs from compute components for debugging and auditing purpo
 
 #### Metrics Component
 Exposes operational and business metrics, including:
-- Accepted events
-- Rejected events
+- Accepted requests
+- Rejected requests
+- Security events
 
 Enables monitoring, alerting, and performance analysis of the system.
 
