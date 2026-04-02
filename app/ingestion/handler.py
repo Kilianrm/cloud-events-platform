@@ -1,10 +1,10 @@
 import json
-import logging
 from ingestion.validation import validate_event
 from ingestion.persistence import persist_event
 from ingestion.errors import ValidationError, EventAlreadyExists
 from shared.response import response
-from shared.logging_utils import log, get_correlation_id
+from shared.logging_utils import log
+from shared.parse_utils import get_correlation_id
 
 def handler(event, context):
     correlation_id = get_correlation_id(event)

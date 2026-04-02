@@ -2,7 +2,8 @@ from read.persistence import get_event
 from read.errors import EventNotFound
 from shared.response import response
 from shared.serialization import to_json_safe
-from shared.logging_utils import log, get_correlation_id
+from shared.logging_utils import log
+from shared.parse_utils import get_correlation_id
 
 
 def handler(event, context):
