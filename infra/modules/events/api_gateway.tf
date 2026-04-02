@@ -41,12 +41,12 @@ resource "aws_apigatewayv2_integration" "read" {
 
 # Integration for: LAMBDA AUTHORIZER -> Diferent resource used. ################### LAMBDA AUTHORIZER
 resource "aws_apigatewayv2_authorizer" "authorization" {
-  api_id           = aws_apigatewayv2_api.events_api.id
-  authorizer_type  = "REQUEST"                           # Lambda Authorizer
-  name             = "events-authorization-lambda-authorizer"     # visible in AWS console
-  identity_sources = ["$request.header.Authorization"]   # takes JWT from Authorization header
-  authorizer_uri   = aws_lambda_function.authorization.invoke_arn
-  authorizer_payload_format_version = "1.0" 
+  api_id                            = aws_apigatewayv2_api.events_api.id
+  authorizer_type                   = "REQUEST"                                # Lambda Authorizer
+  name                              = "events-authorization-lambda-authorizer" # visible in AWS console
+  identity_sources                  = ["$request.header.Authorization"]        # takes JWT from Authorization header
+  authorizer_uri                    = aws_lambda_function.authorization.invoke_arn
+  authorizer_payload_format_version = "1.0"
 }
 
 ################################
@@ -55,27 +55,27 @@ resource "aws_apigatewayv2_authorizer" "authorization" {
 
 # 1️⃣ POST /auth/token (unprotected)
 resource "aws_apigatewayv2_route" "authenticate_token" {
-  api_id            = aws_apigatewayv2_api.events_api.id
-  route_key         = "POST /auth/token"
-  target            = "integrations/${aws_apigatewayv2_integration.authentication.id}"
+  api_id             = aws_apigatewayv2_api.events_api.id
+  route_key          = "POST /auth/token"
+  target             = "integrations/${aws_apigatewayv2_integration.authentication.id}"
   authorization_type = "NONE"
 }
 
 # 2️⃣ POST /events (JWT-protected)
 resource "aws_apigatewayv2_route" "ingest_event" {
-  api_id            = aws_apigatewayv2_api.events_api.id
-  route_key         = "POST /events"
-  target            = "integrations/${aws_apigatewayv2_integration.ingestion.id}"
-  authorization_type = "CUSTOM"                       # protected
+  api_id             = aws_apigatewayv2_api.events_api.id
+  route_key          = "POST /events"
+  target             = "integrations/${aws_apigatewayv2_integration.ingestion.id}"
+  authorization_type = "CUSTOM" # protected
   authorizer_id      = aws_apigatewayv2_authorizer.authorization.id
 }
 
 # 3️⃣ GET /events/{event_id} (JWT-protected)
 resource "aws_apigatewayv2_route" "read_event" {
-  api_id            = aws_apigatewayv2_api.events_api.id
-  route_key         = "GET /events/{event_id}"
-  target            = "integrations/${aws_apigatewayv2_integration.read.id}"
-  authorization_type = "CUSTOM"                       # protected
+  api_id             = aws_apigatewayv2_api.events_api.id
+  route_key          = "GET /events/{event_id}"
+  target             = "integrations/${aws_apigatewayv2_integration.read.id}"
+  authorization_type = "CUSTOM" # protected
   authorizer_id      = aws_apigatewayv2_authorizer.authorization.id
 }
 
@@ -89,34 +89,34 @@ resource "aws_apigatewayv2_stage" "default" {
     destination_arn = aws_cloudwatch_log_group.api_gateway_logs.arn
 
     format = jsonencode({
-      requestId           = "$context.requestId"
-      extendedRequestId   = "$context.extendedRequestId"
-      requestTime         = "$context.requestTime"
-      httpMethod          = "$context.httpMethod"
-      routeKey            = "$context.routeKey"
-      path                = "$context.path"
-      protocol            = "$context.protocol"
-      status              = "$context.status"
-      responseLength      = "$context.responseLength"
-      responseLatency     = "$context.responseLatency"
+      requestId         = "$context.requestId"
+      extendedRequestId = "$context.extendedRequestId"
+      requestTime       = "$context.requestTime"
+      httpMethod        = "$context.httpMethod"
+      routeKey          = "$context.routeKey"
+      path              = "$context.path"
+      protocol          = "$context.protocol"
+      status            = "$context.status"
+      responseLength    = "$context.responseLength"
+      responseLatency   = "$context.responseLatency"
 
-      integrationStatus   = "$context.integrationStatus"
-      integrationLatency  = "$context.integrationLatency"
-      integrationError    = "$context.integrationErrorMessage"
+      integrationStatus  = "$context.integrationStatus"
+      integrationLatency = "$context.integrationLatency"
+      integrationError   = "$context.integrationErrorMessage"
 
-      errorMessage        = "$context.error.message"
-      errorResponseType   = "$context.error.responseType"
+      errorMessage      = "$context.error.message"
+      errorResponseType = "$context.error.responseType"
 
-      authorizerError     = "$context.authorizer.error"
+      authorizerError = "$context.authorizer.error"
 
-      ip                  = "$context.identity.sourceIp"
-      userAgent           = "$context.identity.userAgent"
+      ip        = "$context.identity.sourceIp"
+      userAgent = "$context.identity.userAgent"
     })
   }
 
   default_route_settings {
-    throttling_burst_limit = 100
-    throttling_rate_limit  = 50  
+    throttling_burst_limit   = 100
+    throttling_rate_limit    = 50
     logging_level            = "INFO"
     data_trace_enabled       = true
     detailed_metrics_enabled = true

@@ -56,7 +56,7 @@ resource "aws_lambda_function" "authorization" {
 
   environment {
     variables = {
-      JWT_SECRET_NAME      = var.jwt_secret_name
+      JWT_SECRET_NAME = var.jwt_secret_name
     }
   }
 
@@ -99,13 +99,13 @@ resource "aws_iam_role" "authorization" {
 
 # POLICIES -> ( WHAT CAN I DO?)
 resource "aws_iam_policy" "authorization_secrets_policy" {
-  name   = "authorization-secrets-${var.environment}"
+  name = "authorization-secrets-${var.environment}"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Effect   = "Allow",
-        Action   = ["secretsmanager:GetSecretValue"],
+        Effect = "Allow",
+        Action = ["secretsmanager:GetSecretValue"],
         Resource = [
           aws_secretsmanager_secret.jwt_secret.arn,
         ]
@@ -129,7 +129,7 @@ resource "aws_lambda_permission" "authorization_apigw" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.authorization.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_apigatewayv2_api.events_api.execution_arn}/$default/*/*"
+  source_arn    = "${aws_apigatewayv2_api.events_api.execution_arn}/$default/*/*"
 
   depends_on = [
     aws_apigatewayv2_authorizer.authorization

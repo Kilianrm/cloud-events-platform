@@ -33,7 +33,7 @@ data "archive_file" "authentication_zip" {
     content  = file("${var.app_path}/shared/parse_utils.py")
     filename = "shared/parse_utils.py"
   }
-  
+
 }
 
 # LAMBDA
@@ -96,15 +96,15 @@ resource "aws_iam_role" "authentication" {
 # POLICIES -> ( WHAT CAN I DO?)
 data "aws_caller_identity" "current" {}
 resource "aws_iam_policy" "authentication_secrets_policy" {
-  name   = "authentication_secrets_policy-${var.environment}"
+  name = "authentication_secrets_policy-${var.environment}"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Effect   = "Allow",
-        Action   = ["secretsmanager:GetSecretValue"],
+        Effect = "Allow",
+        Action = ["secretsmanager:GetSecretValue"],
         Resource = [
-          aws_secretsmanager_secret.jwt_secret.arn, # JWT SECRET
+          aws_secretsmanager_secret.jwt_secret.arn,                                                                                     # JWT SECRET
           "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.client_secret_prefix}*" #
         ]
       }

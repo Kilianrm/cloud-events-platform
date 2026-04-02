@@ -7,7 +7,7 @@ resource "null_resource" "build_pyjwt_layer" {
   }
 
   provisioner "local-exec" {
-    command = "${var.app_path}/layers/pyjwt/build_layer.sh"
+    command     = "${var.app_path}/layers/pyjwt/build_layer.sh"
     working_dir = "${var.app_path}/layers/pyjwt"
   }
 }
