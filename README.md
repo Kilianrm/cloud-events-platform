@@ -20,29 +20,19 @@ can be found here:
 
 👉 [AWS System Architecture Map](docs/architecture/aws-service-mapping.md#aws-system-architecture-map.md)
 
-## Key Characteristics
+## Features
 
-- Event-centric ingestion model (events are immutable, append-only records)
-- Explicit separation between write (ingestion) and read responsibilities
-- Stateless HTTP APIs exposed through API Gateway
-- DynamoDB used as a scalable, low-latency persistence layer
-- Infrastructure fully defined and reproducible using Terraform
-- Architectural decisions documented explicitly (ADRs)
-- Small, intentionally limited API surface
-- Centralized logging and metrics via CloudWatch log groups and custom metrics for enhanced observability and monitoring
-
-## Project Scope
-
-### Included in v1.1
-
-- HTTP API for event ingestion
-- HTTP API for reading stored events
-- Persistence layer based on DynamoDB
-- Infrastructure provisioning using Terraform
-- Basic CI setup (linting, formatting, and test execution)
-- Testing strategy with representative examples
-- Architectural documentation and decision records (ADRs)
-- Basic observability including structured logging, correlation IDs, and technical metrics (requests accepted/rejected) via Amazon CloudWatch
+- Immutable event ingestion and storage
+- Dedicated read and write APIs
+- Authentication and authorization layer
+- Traffic control and request throttling
+- Serverless architecture on AWS
+- DynamoDB persistence layer
+- Infrastructure provisioning with Terraform
+- CloudWatch logging and technical metrics
+- Testing strategy covering unit, integration, and end-to-end tests
+- CI checks including linting, formatting, and automated test execution
+- Architecture Decision Records (ADRs)
 
 ### Explicitly out of scope
 
@@ -60,6 +50,7 @@ infra/              # Infrastructure as Code (Terraform)
     prod/           # Support production environment
 docs/               # Architecture, API contracts, and design decisions
 app/                # Application code (Lambda functions)
+tests/              # Unit, integration, and end-to-end tests.
 ```
 
 ## Documentation
@@ -82,16 +73,50 @@ The recommended entry point is the development environment.
 - AWS credentials configured locally
 - Terraform >= 1.14.4.
 - An existing S3 bucket named `cloud-events-terraform-state` for Terraform remote state storage.
+- **Docker installed** (required to run end-to-end tests)
 
-### Deploying the infrastructure
+> No need to run `terraform init` or `terraform apply` manually—everything is handled by `./run.sh`.  
 
-Initialize and apply the infrastructure from the development environment:
+## Usage
 
+All project operations are done via `run.sh` from the **project root**:
+
+| Command | Description |
+|---------|-------------|
+| `./run.sh deploy` | Deploy the system to AWS |
+| `./run.sh test` | Run the E2E tests against the deployed API. |
+| `./run.sh destroy` | Destroy the system in AWS |
+
+---
+
+## Examples
+
+1. **Deploy only:**
+
+```bash
+./run.sh deploy
 ```
-cd infra/envs/dev
-terraform init
-terraform apply
+
+2. **Run end-to-end tests:**
+
+```bash
+./run.sh test
 ```
+
+3. **Destroy the system:**
+
+```bash
+./run.sh destroy
+```
+
+
+**Note:** If you encounter issues in **2**. Try adding your user to the `docker` group.
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+## Deployed resources
 
 Once the deployment finishes, the following resources will be available:
 
@@ -99,32 +124,14 @@ Once the deployment finishes, the following resources will be available:
 - Lambda functions implementing ingestion and read logic
 - DynamoDB table for event storage
 - Associated IAM roles and permissions
+- Secrets configured in Secrets Manager
+- Group logs and metrics in CloudWatch
+- Lambda functions implementing custom Authentication and authoriation using JWT.
 
-Terraform outputs expose the relevant endpoints and resource identifiers.
-
-From the `infra/envs/dev` directory, you can also validate the deployment by
-running the provided test script:
-
-```bash
-../../../scripts/test_api.sh
-```
-
-The script sends a sample event, conforming to the expected event format, to
-the ingestion API Gateway endpoint and then attempts to read it back through
-the read API, validating the end-to-end ingestion and retrieval flow.
-
-### Cleaning up
-
-To remove all resources created in AWS:
-
-```
-cd infra/envs/dev
-terraform destroy
-```
 
 ## Versioning
 
-The current stable version of the project is `v1.0.0`.
+The current stable version of the project is `v1.2.0`.
 
 This release represents a closed and fully documented baseline of the system.
 Future improvements and extensions are intentionally planned outside the scope

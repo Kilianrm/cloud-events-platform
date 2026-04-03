@@ -47,6 +47,11 @@ resource "aws_apigatewayv2_authorizer" "authorization" {
   identity_sources                  = ["$request.header.Authorization"]        # takes JWT from Authorization header
   authorizer_uri                    = aws_lambda_function.authorization.invoke_arn
   authorizer_payload_format_version = "1.0"
+
+  # <-- Caching del authorizer -->
+  authorizer_result_ttl_in_seconds = 0 # 5 seconds cache
+
+
 }
 
 ################################
@@ -68,6 +73,12 @@ resource "aws_apigatewayv2_route" "ingest_event" {
   target             = "integrations/${aws_apigatewayv2_integration.ingestion.id}"
   authorization_type = "CUSTOM" # protected
   authorizer_id      = aws_apigatewayv2_authorizer.authorization.id
+
+  depends_on = [
+    aws_apigatewayv2_integration.ingestion,
+    aws_apigatewayv2_authorizer.authorization
+  ]
+
 }
 
 # 3️⃣ GET /events/{event_id} (JWT-protected)
@@ -77,6 +88,11 @@ resource "aws_apigatewayv2_route" "read_event" {
   target             = "integrations/${aws_apigatewayv2_integration.read.id}"
   authorization_type = "CUSTOM" # protected
   authorizer_id      = aws_apigatewayv2_authorizer.authorization.id
+
+  depends_on = [
+    aws_apigatewayv2_integration.ingestion,
+    aws_apigatewayv2_authorizer.authorization
+  ]
 }
 
 ## STAGE:
@@ -84,6 +100,12 @@ resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.events_api.id
   name        = "$default"
   auto_deploy = true
+
+  depends_on = [
+    aws_apigatewayv2_route.authenticate_token,
+    aws_apigatewayv2_route.ingest_event,
+    aws_apigatewayv2_route.read_event
+  ]
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gateway_logs.arn

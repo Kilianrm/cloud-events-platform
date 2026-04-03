@@ -134,7 +134,7 @@ resource "aws_lambda_permission" "ingestion_apigw" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.ingestion.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.events_api.execution_arn}/*/POST/events"
+  source_arn    = "${aws_apigatewayv2_api.events_api.execution_arn}/$default/*/*"
 
   depends_on = [
     aws_apigatewayv2_integration.ingestion,

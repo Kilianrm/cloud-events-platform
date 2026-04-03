@@ -125,13 +125,9 @@ resource "aws_iam_role_policy_attachment" "authorization_logs_attach" {
 
 # PERMISSIONS ( WHO CAN USE ME?)
 resource "aws_lambda_permission" "authorization_apigw" {
-  statement_id  = "AllowAPIGatewayInvokeAuthorizer"
+  statement_id  = "AllowAPIGatewayInvokeAuthorizer-${var.environment}"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.authorization.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.events_api.execution_arn}/$default/*/*"
-
-  depends_on = [
-    aws_apigatewayv2_authorizer.authorization
-  ]
+  source_arn    = "${aws_apigatewayv2_api.events_api.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.authorization.id}"
 }
