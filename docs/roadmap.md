@@ -93,8 +93,8 @@ overuse.
 Protect the service while preserving its existing behavior.
 
 ### Additions
-- Authentication mechanism
-- **Per-client** rate limiting and throttling
+- Authentication and authorization mechanism
+- Rate limiting and throttling
 - IAM permission tightening
 - Input validation hardening
 
@@ -113,25 +113,28 @@ Protect the service while preserving its existing behavior.
 
 ---
 
-## v1.3 – Reliability & Failure Handling  
-*(Triggered by Error Scenarios)*
+# v1.3 – Reliability & Failure Handling  
+*(Triggered by Heavier Event Processing)*
 
-**Observed Problem**  
-Transient failures and retries risk data loss or inconsistent behavior.
+## Observed Problem
+Events are becoming heavier and now require additional business logic before being ingested. This increases the risk of failures, retries, and inconsistent state.
 
-**Goal**  
-Make failure semantics explicit and safe.
+## Goal
+Handle heavier events safely while making failure semantics explicit.
 
-### Additions
-- Retry and timeout policies
-- Dead-letter queues (DLQs)
-- Explicit idempotency handling
+## Additions / Architecture Changes
+- **Split ingestion Lambda**:  
+  - *Lambda A*: Lightweight validation and enqueueing  
+  - *Lambda B*: Heavy processing and business logic  
+- Retry and timeout policies for all critical operations  
+- Dead-letter queues (DLQs) to capture unprocessed events  
+- Explicit idempotency handling to prevent duplicate processing
 
-### Documentation
-- Failure scenarios and handling
-- Retry semantics
-- Updated service contract
-- ADRs for reliability-related decisions
+## Documentation Updates
+- Detailed failure scenarios and handling strategies  
+- Retry semantics and policies  
+- Updated service contract reflecting reliability and processing changes  
+- ADRs documenting the split Lambda approach and DLQ rationale
 
 ---
 

@@ -6,7 +6,7 @@ the logical architecture.
 
 | Logical Component               | AWS Service / Feature                                                   |
 | ------------------------------- | ----------------------------------------------------------------------- |
-| Ingestion Interface     | | API Gateway + Validation Lambda + SQS Queue + Ingest Lambda + DLQ |
+| Ingestion Interface     |  API Gateway + Validation Lambda + SQS Queue + Ingest Lambda + DLQ |
 | Read Interface          | API Gateway  + Lambda (Input Validation) |
 | Persistence                     | DynamoDB                                                                |
 | Monitoring / Logging            | CloudWatch (Log Groups, Metrics)                                        |
