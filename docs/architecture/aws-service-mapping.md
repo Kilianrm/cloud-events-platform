@@ -6,7 +6,7 @@ the logical architecture.
 
 | Logical Component               | AWS Service / Feature                                                   |
 | ------------------------------- | ----------------------------------------------------------------------- |
-| Ingestion Interface     | API Gateway  + Lambda (Input Validation) |
+| Ingestion Interface     | | API Gateway + Validation Lambda + SQS Queue + Ingest Lambda + DLQ |
 | Read Interface          | API Gateway  + Lambda (Input Validation) |
 | Persistence                     | DynamoDB                                                                |
 | Monitoring / Logging            | CloudWatch (Log Groups, Metrics)                                        |
@@ -44,9 +44,11 @@ flowchart LR
         end
 
         %% --- Business Flow ---
-        subgraph BizFlow["Business"]
-            
+        subgraph BizFlow["-"]
+            Validation["Validation Lambda"]
+            SQS["Queue(SQS)"]
             Ingest["Ingest Lambda"]
+            DLQ["Dead Letter Queue"]
             Read["Read Lambda"]
         end
 
@@ -60,6 +62,7 @@ flowchart LR
             LGAuthorization["Authorization Logs"]
             LG1["Ingest Logs"]
             LG2["Read Logs"]
+            LG3["Validation Logs"]
 
             subgraph Metrics["Metrics"]
                 Accepted["Accepted Requests"]
@@ -90,8 +93,12 @@ flowchart LR
     %% Possible outcomes
     APIGW -->|400,401,404,413,429,500| Client
     APIGW -->|200,201| Client
-    APIGW -->|POST /events| Ingest
+    APIGW -->|POST /events| Validation
     APIGW -->|GET /events| Read
+
+    %% Ingestion:
+    Validation --> SQS --> Ingest
+    SQS --> | 3 retry error | DLQ
 
     %% Database interactions
     Ingest -->|write| DB
@@ -103,21 +110,24 @@ flowchart LR
     LAW --> LGAuthorization
     Ingest --> LG1
     Read --> LG2
+    Validation --> LG3
     %% Metrics
     LG1 --> Metrics
     LG2 --> Metrics
     LGSec --> Metrics
+    LGAuthorization --> Metrics
+    LGAuthorization --> Metrics
+    LG3 --> Metrics
 ```
-
 
 ## Persistence Mapping
 
 The logical Persistence Component is mapped to Amazon DynamoDB.
 
-DynamoDB is chosen to support the durability, immutability and
-idempotency guarantees defined by the Service Contract.
+DynamoDB is chosen to support durability, immutability, and idempotency guarantees defined by the Service Contract. 
 
-This document does not describe table schemas or access patterns.
+- Ingest Lambda uses DynamoDB to store processed event data and to track event IDs for idempotency.
+- This ensures that repeated or retried messages do not result in duplicate processing.
 
 Detailed storage design is documented in:
 - [Persistence Component – DynamoDB](../components/dynamodb.md)
@@ -126,11 +136,13 @@ Detailed storage design is documented in:
 
 ## Ingestion Interface Mapping
 
-The Ingestion Interface is implemented using AWS API Gateway
-and an AWS Lambda function.
+The Ingestion Interface is implemented using AWS API Gateway, a Validation Lambda, SQS queue, and an Ingest Lambda function.
 
 - [API Gateway](../components/api-gateway.md)
-- [Ingestion Lambda](../components/ingestion-lambda.md)
+- [Validation Lambda](../components/validation-lambda.md)
+- [SQS Queue](../components/sqs.md)
+- [Ingest Lambda](../components/ingest-lambda.md)
+- [DLQ](../components/sqs-dlq.md)
 
 ## Read Interface Mapping
 

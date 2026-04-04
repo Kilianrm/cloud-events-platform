@@ -9,8 +9,19 @@ in a durable and reliable way.
 The platform defines a strict **event envelope** with well-defined
 semantics and guarantees.
 
-The **event payload itself is treated as opaque data** and is not
-interpreted, validated or transformed by the core system.
+Minimal validation is applied to event metadata (required fields,
+timestamps, size) before events enter the system. The **payload remains
+opaque and is not interpreted or transformed by the core system**.
+
+Events are processed asynchronously through a queue. Transient failures
+are retried according to system policies, and events that cannot be
+processed are safely captured in a **dead-letter queue** for later inspection.
+
+Idempotency is enforced using `event_id` to prevent duplicate processing.
+
+Minimal internal metadata (e.g., ingestion timestamp, processed_by,
+validation status) is added during ingestion for auditing and operational
+purposes. The original payload remains unchanged.
 
 The system acts as an internal, authoritative store for accepted events.
 Business logic and domain-specific processing are explicitly out of scope.
@@ -18,8 +29,8 @@ Business logic and domain-specific processing are explicitly out of scope.
 The platform enforces strict **security and access control**. Only
 authenticated clients can submit or read events, and access is controlled
 according to authorization policies, including rate limiting and quotas.
-Security responsibilities are implemented without introducing business logic
-or transforming event payloads.
+Technical security checks are performed to ensure that only authorized
+clients can submit events.
 
 ---
 
