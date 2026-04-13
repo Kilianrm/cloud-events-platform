@@ -1,0 +1,94 @@
+name: CI Manual Suite
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test suite to run"
+        required: true
+        default: "integration"
+        type: choice
+        options:
+          - smoke
+          - integration
+          - system
+          - resilience
+          - e2e
+          - all
+
+jobs:
+  test:
+    name: Run selected test suite
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+      PYTHONPATH: app
+
+    steps:
+      # -----------------------------
+      # Checkout code
+      # -----------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -----------------------------
+      # Setup Python
+      # -----------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # -----------------------------
+      # Install dependencies
+      # -----------------------------
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest==9.0.2 boto3==1.42.72 moto==5.1.22 PyJWT==2.12.1
+
+      # -----------------------------
+      # SMOKE TESTS
+      # -----------------------------
+      - name: Run smoke tests
+        if: ${{ github.event.inputs.suite == 'smoke' || github.event.inputs.suite == 'all' }}
+        run: |
+          echo "🚬 Running smoke tests..."
+          pytest tests/smoke -v --disable-warnings
+
+      # -----------------------------
+      # INTEGRATION TESTS
+      # -----------------------------
+      - name: Run integration tests
+        if: ${{ github.event.inputs.suite == 'integration' || github.event.inputs.suite == 'all' }}
+        run: |
+          echo "🔧 Running integration tests..."
+          pytest tests/integration -v --disable-warnings
+
+      # -----------------------------
+      # SYSTEM TESTS
+      # -----------------------------
+      - name: Run system tests
+        if: ${{ github.event.inputs.suite == 'system' || github.event.inputs.suite == 'all' }}
+        run: |
+          echo "🧠 Running system tests..."
+          pytest tests/system -v --disable-warnings
+
+      # -----------------------------
+      # RESILIENCE TESTS
+      # -----------------------------
+      - name: Run resilience tests
+        if: ${{ github.event.inputs.suite == 'resilience' || github.event.inputs.suite == 'all' }}
+        run: |
+          echo "💥 Running resilience tests..."
+          pytest tests/resilience -v --disable-warnings
+
+      # -----------------------------
+      # E2E TESTS
+      # -----------------------------
+      - name: Run e2e tests
+        if: ${{ github.event.inputs.suite == 'e2e' || github.event.inputs.suite == 'all' }}
+        run: |
+          echo "🌐 Running e2e tests..."
+          pytest tests/e2e -v --disable-warnings
