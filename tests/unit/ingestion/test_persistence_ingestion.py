@@ -12,11 +12,13 @@ from ingestion.errors import EventAlreadyExists
 
 def base_event():
     return {
-        "event_id": "123",
-        "event_type": "image_uploaded",
-        "source": "api",
-        "timestamp": "2026-01-01T10:00:00+00:00",
-        "payload": {"image_id": "1"},
+        "event": {
+            "event_id": "evt-1",
+            "event_type": "TEST",
+            "source": "integration-test",
+            "timestamp": "2026-03-01T12:00:00Z",
+            "payload": {"x": 1}
+        }
     }
 
 
@@ -41,7 +43,7 @@ def test_persist_event_success(mock_boto_resource):
 
     args, kwargs = mock_table.put_item.call_args
 
-    assert kwargs["Item"]["event_id"] == "123"
+    assert kwargs["Item"]["event"]["event_id"] == "evt-1"
     assert "ingestion_time" in kwargs["Item"]
     assert kwargs["ConditionExpression"] == "attribute_not_exists(event_id)"
 

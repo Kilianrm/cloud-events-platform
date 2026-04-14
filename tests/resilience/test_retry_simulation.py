@@ -6,14 +6,15 @@ from unittest.mock import patch
 
 from ingestion.handler import handler as ingestion_handler
 
-
 def valid_event():
     return {
-        "event_id": "evt-retry-1",
-        "event_type": "TEST",
-        "source": "test",
-        "timestamp": "2026-01-01T10:00:00Z",
-        "payload": {"x": 1},
+        "event": {
+            "event_id": "evt-retry-1",
+            "event_type": "TEST",
+            "source": "test",
+            "timestamp": "2026-03-01T12:00:00Z",
+            "payload": {"x": 1}
+        }
     }
 
 

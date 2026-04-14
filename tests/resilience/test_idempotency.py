@@ -15,11 +15,13 @@ def sqs_record(message_id, body):
 
 def valid_event():
     return {
-        "event_id": "evt-1",
-        "event_type": "TEST",
-        "source": "test",
-        "timestamp": "2026-01-01T10:00:00Z",
-        "payload": {"x": 1},
+        "event": {
+            "event_id": "evt-1",
+            "event_type": "TEST",
+            "source": "integration-test",
+            "timestamp": "2026-03-01T12:00:00Z",
+            "payload": {"x": 1}
+        }
     }
 
 

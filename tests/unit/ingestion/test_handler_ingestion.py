@@ -23,11 +23,13 @@ def sqs_event(body, message_id="msg-1"):
 
 def valid_event():
     return {
-        "event_id": "123",
-        "event_type": "image_uploaded",
-        "source": "api",
-        "timestamp": "2026-01-01T10:00:00+00:00",
-        "payload": {"image_id": "1"},
+        "event": {
+            "event_id": "evt-1",
+            "event_type": "TEST",
+            "source": "integration-test",
+            "timestamp": "2026-03-01T12:00:00Z",
+            "payload": {"x": 1}
+        }
     }
 
 
