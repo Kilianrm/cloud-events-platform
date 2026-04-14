@@ -24,11 +24,11 @@ resource "aws_apigatewayv2_integration" "authentication" {
   integration_uri  = aws_lambda_function.authentication.invoke_arn
 }
 
-# Integration for POST /events (Write/Ingestion Lambda)
-resource "aws_apigatewayv2_integration" "ingestion" {
+# Integration for POST /events (Write/ Validation + Ingestion Lambda)
+resource "aws_apigatewayv2_integration" "ingestion_validation" {
   api_id           = aws_apigatewayv2_api.events_api.id
   integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.ingestion.invoke_arn
+  integration_uri  = aws_lambda_function.validation.invoke_arn
 }
 
 # Integration for GET /events/{event_id} (Read Lambda)
@@ -70,7 +70,7 @@ resource "aws_apigatewayv2_route" "authenticate_token" {
 resource "aws_apigatewayv2_route" "ingest_event" {
   api_id             = aws_apigatewayv2_api.events_api.id
   route_key          = "POST /events"
-  target             = "integrations/${aws_apigatewayv2_integration.ingestion.id}"
+  target             = "integrations/${aws_apigatewayv2_integration.ingestion_validation.id}"
   authorization_type = "CUSTOM" # protected
   authorizer_id      = aws_apigatewayv2_authorizer.authorization.id
 

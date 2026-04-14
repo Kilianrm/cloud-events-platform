@@ -67,6 +67,12 @@ resource "aws_lambda_function" "ingestion" {
       TABLE_NAME = aws_dynamodb_table.events.name
     }
   }
+  event_source_mapping { # EQUIVALENT TO PERMISSION?
+    event_source_arn = aws_sqs_queue.event_queue.arn
+    batch_size       = 10
+    enabled          = true
+  }
+
 
   tags = {
     Name        = "ingestion"

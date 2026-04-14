@@ -8,9 +8,9 @@ from shared.response import response
 from shared.logging_utils import log
 from shared.parse_utils import get_correlation_id
 
-sqs = boto3.client("sqs")
 
-
+def get_sqs():
+    return boto3.client("sqs")
 
 def handler(event, context):
     correlation_id = get_correlation_id(event)
@@ -20,6 +20,8 @@ def handler(event, context):
         level="info",
         correlation_id=correlation_id,
     )
+
+    sqs = get_sqs()
 
     try:
         if not event.get("body"):

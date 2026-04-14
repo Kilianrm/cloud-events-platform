@@ -37,10 +37,12 @@ def mock_queue_env():
 # SUCCESS CASE
 # -----------------------------
 
-@patch("validation.handler.sqs")
+@patch("validation.handler.get_sqs")
 @patch("validation.handler.validate_event")
-def test_handler_valid_request_returns_202(mock_validate, mock_sqs, mock_queue_env):
-    mock_sqs.send_message = MagicMock()
+def test_handler_valid_request_returns_202(mock_validate, mock_get_sqs, mock_queue_env):
+
+    mock_sqs_client = MagicMock()
+    mock_get_sqs.return_value = mock_sqs_client
 
     response = handler(build_event(valid_body()), None)
 
@@ -51,7 +53,7 @@ def test_handler_valid_request_returns_202(mock_validate, mock_sqs, mock_queue_e
     assert body["event_id"] == valid_body()["event_id"]
 
     mock_validate.assert_called_once()
-    mock_sqs.send_message.assert_called_once()
+    mock_sqs_client.send_message.assert_called_once()
 
 
 # -----------------------------

@@ -10,10 +10,11 @@ from ingestion.errors import EventAlreadyExists
 # HELPERS
 # -----------------------------
 
-def sqs_event(body):
+def sqs_event(body, message_id="msg-1"):
     return {
         "Records": [
             {
+                "messageId": message_id,
                 "body": json.dumps(body)
             }
         ]
@@ -58,16 +59,21 @@ def test_ingestion_duplicate_event(mock_corr, mock_persist):
 
 
 # -----------------------------
-# UNEXPECTED ERROR (RAISE)
+# UNEXPECTED ERROR MARKS FAILURE
 # -----------------------------
 
 @patch("ingestion.handler.persist_event", side_effect=Exception("boom"))
 @patch("ingestion.handler.get_correlation_id", return_value="corr-1")
-def test_ingestion_unexpected_error_raises(mock_corr, mock_persist):
+def test_ingestion_unexpected_error_marks_failure(mock_corr, mock_persist):
     event = sqs_event(valid_event())
 
-    with pytest.raises(Exception):
-        handler(event, None)
+    result = handler(event, None)
+
+    assert result == {
+        "batchItemFailures": [
+            {"itemIdentifier": event["Records"][0]["messageId"]}
+        ]
+    }
 
 
 # -----------------------------
