@@ -18,11 +18,24 @@ def handler(event, context):
         records=len(records),
     )
 
+    batch_item_failures = []
+
     for record in records:
+        message_id = record.get("messageId")
         event_id = None
 
         try:
-            body = json.loads(record["body"])
+            # -----------------------------
+            # SAFE BODY ACCESS
+            # -----------------------------
+            body_raw = record.get("body")
+            if not body_raw:
+                raise Exception("Missing SQS body")
+
+            # -----------------------------
+            # PARSE JSON
+            # -----------------------------
+            body = json.loads(body_raw)
             event_id = body.get("event_id")
 
             log(
@@ -32,7 +45,9 @@ def handler(event, context):
                 event_id=event_id,
             )
 
-            # ingestion = NO validation
+            # -----------------------------
+            # PERSISTENCE
+            # -----------------------------
             persist_event(body)
 
             log(
@@ -50,8 +65,7 @@ def handler(event, context):
                 correlation_id=correlation_id,
                 event_id=event_id,
             )
-
-            # no raise → SQS continuará con otros mensajes
+            # NOT failure → do NOT retry
 
         except Exception as e:
             log(
@@ -62,5 +76,15 @@ def handler(event, context):
                 error=repr(e),
             )
 
-            # importante: re-raise para retry + DLQ
-            raise
+            # mark ONLY this message as failed
+            if message_id:
+                batch_item_failures.append({
+                    "itemIdentifier": message_id
+                })
+
+    # -----------------------------
+    # AWS SQS RESPONSE FORMAT
+    # -----------------------------
+    return {
+        "batchItemFailures": batch_item_failures
+    }

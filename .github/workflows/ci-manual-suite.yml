@@ -23,7 +23,6 @@ jobs:
 
     env:
       AWS_DEFAULT_REGION: us-east-1
-      PYTHONPATH: app
 
     steps:
       # -----------------------------
@@ -45,7 +44,7 @@ jobs:
       # -----------------------------
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+         python -m pip install --upgrade pip
           pip install pytest==9.0.2 boto3==1.42.72 moto==5.1.22 PyJWT==2.12.1
 
       # -----------------------------
@@ -55,7 +54,7 @@ jobs:
         if: ${{ github.event.inputs.suite == 'smoke' || github.event.inputs.suite == 'all' }}
         run: |
           echo "🚬 Running smoke tests..."
-          pytest tests/smoke -v --disable-warnings
+          PYTHONPATH=app pytest tests/smoke -v --disable-warnings
 
       # -----------------------------
       # INTEGRATION TESTS
@@ -64,7 +63,7 @@ jobs:
         if: ${{ github.event.inputs.suite == 'integration' || github.event.inputs.suite == 'all' }}
         run: |
           echo "🔧 Running integration tests..."
-          pytest tests/integration -v --disable-warnings
+          PYTHONPATH=app pytest tests/integration -v --disable-warnings
 
       # -----------------------------
       # SYSTEM TESTS
@@ -73,7 +72,7 @@ jobs:
         if: ${{ github.event.inputs.suite == 'system' || github.event.inputs.suite == 'all' }}
         run: |
           echo "🧠 Running system tests..."
-          pytest tests/system -v --disable-warnings
+          PYTHONPATH=app pytest tests/system -v --disable-warnings
 
       # -----------------------------
       # RESILIENCE TESTS
@@ -82,7 +81,7 @@ jobs:
         if: ${{ github.event.inputs.suite == 'resilience' || github.event.inputs.suite == 'all' }}
         run: |
           echo "💥 Running resilience tests..."
-          pytest tests/resilience -v --disable-warnings
+          PYTHONPATH=app pytest tests/resilience -v --disable-warnings
 
       # -----------------------------
       # E2E TESTS
@@ -91,4 +90,4 @@ jobs:
         if: ${{ github.event.inputs.suite == 'e2e' || github.event.inputs.suite == 'all' }}
         run: |
           echo "🌐 Running e2e tests..."
-          pytest tests/e2e -v --disable-warnings
+          PYTHONPATH=app pytest tests/e2e -v --disable-warnings

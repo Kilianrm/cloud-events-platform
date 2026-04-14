@@ -84,10 +84,10 @@ def test_ingestion_retry_behavior_is_handled_correctly():
     # -----------------------------
     # ACT 1 — SIMULATE FAILURE
     # -----------------------------
-    with patch(
-        "ingestion.handler.persist_event",
-        side_effect=Exception("Transient DB error")
-    ):
+    print("handler module:", ingestion_handler.__module__)
+    print("handler file:", ingestion_handler.__code__.co_filename)
+    with patch(f"{ingestion_handler.__module__}.persist_event",
+           side_effect=Exception("Transient DB error")):
         response = ingestion_handler(event, None)
 
     # Lambda should mark message as failed (triggering SQS retry)
