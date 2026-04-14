@@ -29,6 +29,7 @@ resource "aws_apigatewayv2_integration" "ingestion_validation" {
   api_id           = aws_apigatewayv2_api.events_api.id
   integration_type = "AWS_PROXY"
   integration_uri  = aws_lambda_function.validation.invoke_arn
+
 }
 
 # Integration for GET /events/{event_id} (Read Lambda)
@@ -75,7 +76,7 @@ resource "aws_apigatewayv2_route" "ingest_event" {
   authorizer_id      = aws_apigatewayv2_authorizer.authorization.id
 
   depends_on = [
-    aws_apigatewayv2_integration.ingestion,
+    aws_apigatewayv2_integration.ingestion_validation,
     aws_apigatewayv2_authorizer.authorization
   ]
 
@@ -90,7 +91,7 @@ resource "aws_apigatewayv2_route" "read_event" {
   authorizer_id      = aws_apigatewayv2_authorizer.authorization.id
 
   depends_on = [
-    aws_apigatewayv2_integration.ingestion,
+    aws_apigatewayv2_integration.read,
     aws_apigatewayv2_authorizer.authorization
   ]
 }

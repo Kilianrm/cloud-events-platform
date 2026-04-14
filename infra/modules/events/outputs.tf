@@ -48,3 +48,7 @@ output "event_dlq_arn" {
   description = "ARN of the dead letter queue"
   value       = aws_sqs_queue.event_dlq.arn
 }
+
+output "table_name" {
+  value = aws_dynamodb_table.events.name
+}
