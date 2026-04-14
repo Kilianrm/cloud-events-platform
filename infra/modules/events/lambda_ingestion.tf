@@ -14,11 +14,6 @@ data "archive_file" "ingestion_zip" {
   }
 
   source {
-    content  = file("${var.app_path}/ingestion/validation.py")
-    filename = "ingestion/validation.py"
-  }
-
-  source {
     content  = file("${var.app_path}/ingestion/errors.py")
     filename = "ingestion/errors.py"
   }
@@ -67,12 +62,6 @@ resource "aws_lambda_function" "ingestion" {
       TABLE_NAME = aws_dynamodb_table.events.name
     }
   }
-  event_source_mapping { # EQUIVALENT TO PERMISSION?
-    event_source_arn = aws_sqs_queue.event_queue.arn
-    batch_size       = 10
-    enabled          = true
-  }
-
 
   tags = {
     Name        = "ingestion"
@@ -85,6 +74,8 @@ resource "aws_lambda_function" "ingestion" {
     aws_iam_role_policy_attachment.ingestion_logs_attach,
   ]
 }
+
+
 # ROLES ( WHO AM I?)
 resource "aws_iam_role" "ingestion" {
   name = "ingestion-${var.environment}-role"
@@ -123,6 +114,13 @@ resource "aws_iam_policy" "ingestion_dynamodb" {
   })
 }
 
+# Attach ingestion sqs
+
+resource "aws_iam_role_policy_attachment" "ingestion_sqs_attach" {
+  role       = aws_iam_role.ingestion.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+}
+
 # Attach custom policy
 resource "aws_iam_role_policy_attachment" "ingestion_dynamodb_attach" {
   role       = aws_iam_role.ingestion.name
@@ -143,7 +141,7 @@ resource "aws_lambda_permission" "ingestion_apigw" {
   source_arn    = "${aws_apigatewayv2_api.events_api.execution_arn}/$default/*/*"
 
   depends_on = [
-    aws_apigatewayv2_integration.ingestion,
+    aws_apigatewayv2_integration.ingestion_validation,
     aws_apigatewayv2_route.ingest_event
   ]
 
