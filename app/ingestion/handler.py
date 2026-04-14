@@ -9,6 +9,7 @@ from shared.parse_utils import get_correlation_id
 def handler(event, context):
     correlation_id = get_correlation_id(event)
 
+    print(event)
     records = event.get("Records", [])
 
     log(
@@ -36,7 +37,8 @@ def handler(event, context):
             # PARSE JSON
             # -----------------------------
             body = json.loads(body_raw)
-            event_id = body.get("event_id")
+            event_data = body.get("event", {})
+            event_id = event_data.get("event_id")
 
             log(
                 "Processing event",
@@ -48,7 +50,7 @@ def handler(event, context):
             # -----------------------------
             # PERSISTENCE
             # -----------------------------
-            persist_event(body)
+            persist_event(event_data)
 
             log(
                 "Event persisted",

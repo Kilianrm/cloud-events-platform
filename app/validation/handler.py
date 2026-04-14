@@ -32,8 +32,8 @@ def handler(event, context):
                     "message": "Request body is required"
                 },
             )
-
         body = json.loads(event["body"])
+        
 
         validate_event(body)
 
