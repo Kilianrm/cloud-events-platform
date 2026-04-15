@@ -38,3 +38,7 @@ module "events" {
 output "api_base_url" {
   value = module.events.api_base_url
 }
+
+output "table_name" {
+  value = module.events.table_name
+}
