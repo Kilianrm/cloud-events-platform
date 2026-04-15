@@ -3,9 +3,12 @@ import time
 import requests
 import boto3
 from datetime import datetime, timezone, timedelta
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-dynamodb = boto3.resource("dynamodb")
+dynamodb = boto3.resource("dynamodb",os.getenv("AWS_REGION","us-east-1"))
 
 
 def wait_for_event(table, event_id: str, timeout: int = 15):

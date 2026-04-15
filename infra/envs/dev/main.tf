@@ -42,3 +42,7 @@ output "api_base_url" {
 output "table_name" {
   value = module.events.table_name
 }
+
+output "aws_region" {
+  value = local.region
+}

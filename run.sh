@@ -9,7 +9,7 @@ ACTION=${1:-}
 if [[ "$ACTION" == "--help" || "$ACTION" == "" ]]; then
     echo "Usage:"
     echo "  ./run.sh deploy   -> deploy system"
-    echo "  ./run.sh test     -> run E2E tests"
+    echo "  ./run.sh e2e      -> run E2E tests"
     echo "  ./run.sh smoke    -> run SMOKE tests"
     echo "  ./run.sh destroy  -> destroy system"
     exit 0
@@ -27,46 +27,50 @@ fi
 # -----------------------------
 deploy_system() {
     echo "🚀 Deploying system with Terraform..."
-    cd infra/envs/dev
 
-    terraform init
-    terraform apply -auto-approve
+    TF_DIR="infra/envs/dev"
 
-    API_URL=$(terraform output -raw api_base_url | xargs)
-    cd ../../../
+    terraform -chdir="$TF_DIR" init
+    terraform -chdir="$TF_DIR" apply -auto-approve
 
-    echo "✅ System deployed. API_BASE_URL=$API_URL"
+    API_URL=$(terraform -chdir="$TF_DIR" output -raw api_base_url | xargs)
+    TABLE_NAME=$(terraform -chdir="$TF_DIR" output -raw table_name | xargs)
+    AWS_REGION=$(terraform -chdir="$TF_DIR" output -raw aws_region | xargs)
 
-    if grep -q '^API_BASE_URL=' .env 2>/dev/null; then
-        sed -i'' -e "s|^API_BASE_URL=.*|API_BASE_URL=$API_URL|" .env
-    else
-        echo "API_BASE_URL=$API_URL" >> .env
-    fi
+    echo "✅ System deployed."
+    echo "API_BASE_URL=$API_URL"
+    echo "TABLE_NAME=$TABLE_NAME"
+    echo "AWS_REGION=$AWS_REGION"
 
-    export API_BASE_URL=$API_URL
+    echo "API_BASE_URL=$API_URL" > .env
+    echo "TABLE_NAME=$TABLE_NAME" >> .env
+    echo "AWS_REGION=$AWS_REGION" >> .env
+
+    echo "🎯 Ready for tests"
 }
 
 # -----------------------------
 # DOCKER RUNNER
 # -----------------------------
 run_e2e() {
-    echo "🧪 Running E2E tests against $API_BASE_URL"
+    echo "🧪 Running E2E tests"
 
     docker build -f tests/Dockerfile.e2e -t my-tests tests/
 
     docker run --rm -it \
-        -e API_BASE_URL="$API_BASE_URL" \
+        --env-file .env \
         -e TEST_PATH=tests/e2e \
+        -v ~/.aws:/root/.aws \
         my-tests
 }
 
 run_smoke() {
-    echo "🔥 Running SMOKE tests against $API_BASE_URL"
+    echo "🔥 Running SMOKE tests"
 
     docker build -f tests/Dockerfile.e2e -t my-tests tests/
 
     docker run --rm -it \
-        -e API_BASE_URL="$API_BASE_URL" \
+        --env-file .env \
         -e TEST_PATH=tests/smoke \
         my-tests
 }
@@ -96,7 +100,7 @@ case "$ACTION" in
     deploy)
         deploy_system
         ;;
-    test)
+    e2e)
         run_e2e
         ;;
     smoke)
@@ -106,7 +110,7 @@ case "$ACTION" in
         destroy_system
         ;;
     *)
-        echo "Usage: $0 [deploy|test|smoke|destroy]"
+        echo "Usage: $0 [deploy|e2e|smoke|destroy]"
         exit 1
         ;;
 esac
