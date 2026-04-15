@@ -48,6 +48,14 @@ def handler(event, context):
             )
 
             # -----------------------------
+            # TEST HOOK (infra-level only)
+            # -----------------------------
+            metadata = body.get("metadata", {})
+            if metadata.get("test", {}).get("force_fail"):
+                raise RuntimeError("Injected failure for DLQ test")
+            
+
+            # -----------------------------
             # PERSISTENCE
             # -----------------------------
             persist_event(event_data)

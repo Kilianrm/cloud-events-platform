@@ -46,3 +46,11 @@ output "table_name" {
 output "aws_region" {
   value = local.region
 }
+
+output "queue_url" {
+  value = module.events.queue_url
+}
+
+output "dlq_url" {
+  value       = module.events.dlq_url
+}

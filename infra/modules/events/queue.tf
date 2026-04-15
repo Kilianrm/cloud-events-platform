@@ -1,11 +1,11 @@
 resource "aws_sqs_queue" "event_dlq" {
   name                       = "event-dlq-${var.environment}"
-  visibility_timeout_seconds = 60
+  visibility_timeout_seconds = 20
 }
 
 resource "aws_sqs_queue" "event_queue" {
   name                       = "event-queue-${var.environment}"
-  visibility_timeout_seconds = 60
+  visibility_timeout_seconds = 20
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.event_dlq.arn

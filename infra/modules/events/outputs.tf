@@ -29,22 +29,22 @@ output "authorization_lambda_arn" {
   description = "ARN of the Authorization Lambda"
 }
 
-output "event_queue_url" {
+output "queue_url" {
   description = "URL of the main event queue"
   value       = aws_sqs_queue.event_queue.id
 }
 
-output "event_queue_arn" {
+output "queue_arn" {
   description = "ARN of the main event queue"
   value       = aws_sqs_queue.event_queue.arn
 }
 
-output "event_dlq_url" {
+output "dlq_url" {
   description = "URL of the dead letter queue"
   value       = aws_sqs_queue.event_dlq.id
 }
 
-output "event_dlq_arn" {
+output "dlq_arn" {
   description = "ARN of the dead letter queue"
   value       = aws_sqs_queue.event_dlq.arn
 }
