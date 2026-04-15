@@ -1,12 +1,11 @@
 import requests
 import uuid
-from conftest import API_BASE_URL
 from datetime import datetime, timezone, timedelta
 
 # -----------------------------
 # SMOKE 1 — API + AUTH OK
 # -----------------------------
-def test_api_accepts_valid_event(get_jwt_token):
+def test_api_accepts_valid_event(get_jwt_token,api_base_url):
     token = get_jwt_token("client1", "super-secret-pass1")
 
     payload = {
@@ -20,7 +19,7 @@ def test_api_accepts_valid_event(get_jwt_token):
     }
     
 
-    resp = requests.post(f"{API_BASE_URL}/events",json=payload,headers={"Authorization": f"Bearer {token}"})
+    resp = requests.post(f"{api_base_url}/events",json=payload,headers={"Authorization": f"Bearer {token}"})
 
     assert resp.status_code in (200, 201, 202)
 
@@ -28,7 +27,7 @@ def test_api_accepts_valid_event(get_jwt_token):
 # -----------------------------
 # SMOKE 2 — INVALID REQUEST FAILS
 # -----------------------------
-def test_api_rejects_invalid_event(get_jwt_token):
+def test_api_rejects_invalid_event(get_jwt_token,api_base_url):
     token = get_jwt_token("client1", "super-secret-pass1")
 
     payload = {
@@ -36,7 +35,7 @@ def test_api_rejects_invalid_event(get_jwt_token):
     }
 
     resp = requests.post(
-        f"{API_BASE_URL}/events",
+       f"{api_base_url}/events",
         json=payload,
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -47,7 +46,7 @@ def test_api_rejects_invalid_event(get_jwt_token):
 # -----------------------------
 # SMOKE 3 — AUTH REQUIRED
 # -----------------------------
-def test_api_requires_auth():
-    resp = requests.get(f"{API_BASE_URL}/events/smoke-1")
+def test_api_requires_auth(api_base_url):
+    resp = requests.get(f"{api_base_url}/events/smoke-1")
 
     assert resp.status_code == 401

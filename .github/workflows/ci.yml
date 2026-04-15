@@ -28,7 +28,7 @@ jobs:
       # Always run unit tests
       - name: Run unit tests
         run: |
-           PYTHONPATH=app pytest tests/unit -m "not integration and not e2e" -v
+           PYTHONPATH=app pytest tests/pre_deploy/unit -m "not integration and not e2e" -v
 
   terraform:
     name: Terraform validate and plan (${{ matrix.env }})

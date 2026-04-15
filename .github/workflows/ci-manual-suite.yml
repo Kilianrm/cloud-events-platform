@@ -52,7 +52,7 @@ jobs:
         if: ${{ github.event.inputs.suite == 'integration' || github.event.inputs.suite == 'all' }}
         run: |
           echo "🔧 Running integration tests..."
-          PYTHONPATH=app pytest tests/integration -v --disable-warnings
+          PYTHONPATH=app pytest tests/pre_deploy/integration -v --disable-warnings
 
       # -----------------------------
       # SYSTEM TESTS
@@ -61,7 +61,7 @@ jobs:
         if: ${{ github.event.inputs.suite == 'system' || github.event.inputs.suite == 'all' }}
         run: |
           echo "🧠 Running system tests..."
-          PYTHONPATH=app pytest tests/system -v --disable-warnings
+          PYTHONPATH=app pytest tests/pre_deploy/system -v --disable-warnings
 
       # -----------------------------
       # RESILIENCE TESTS
@@ -70,4 +70,4 @@ jobs:
         if: ${{ github.event.inputs.suite == 'resilience' || github.event.inputs.suite == 'all' }}
         run: |
           echo "💥 Running resilience tests..."
-          PYTHONPATH=app pytest tests/resilience -v --disable-warnings
+          PYTHONPATH=app pytest tests/pre_deploy/resilience -v --disable-warnings
