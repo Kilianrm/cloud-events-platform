@@ -2,6 +2,7 @@
 set -e
 
 ACTION=${1:-}
+TF_DIR="infra/envs/dev"
 
 # -----------------------------
 # HELP
@@ -28,7 +29,6 @@ fi
 deploy_system() {
     echo "🚀 Deploying system with Terraform..."
 
-    TF_DIR="infra/envs/dev"
 
     terraform -chdir="$TF_DIR" init
     terraform -chdir="$TF_DIR" apply -auto-approve
@@ -80,10 +80,8 @@ run_smoke() {
 # -----------------------------
 destroy_system() {
     echo "🗑️ Destroying system with Terraform..."
-    cd infra/envs/dev
 
-    terraform destroy -auto-approve
-    cd ../../../
+    terraform -chdir="$TF_DIR" destroy -auto-approve
 
     echo "✅ All resources destroyed."
 

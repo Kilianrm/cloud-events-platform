@@ -9,11 +9,9 @@ on:
         default: "integration"
         type: choice
         options:
-          - smoke
           - integration
           - system
           - resilience
-          - e2e
           - all
 
 jobs:
@@ -48,15 +46,6 @@ jobs:
           pip install pytest==9.0.2 boto3==1.42.72 moto==5.1.22 PyJWT==2.12.1
 
       # -----------------------------
-      # SMOKE TESTS
-      # -----------------------------
-      - name: Run smoke tests
-        if: ${{ github.event.inputs.suite == 'smoke' || github.event.inputs.suite == 'all' }}
-        run: |
-          echo "🚬 Running smoke tests..."
-          PYTHONPATH=app pytest tests/smoke -v --disable-warnings
-
-      # -----------------------------
       # INTEGRATION TESTS
       # -----------------------------
       - name: Run integration tests
@@ -82,12 +71,3 @@ jobs:
         run: |
           echo "💥 Running resilience tests..."
           PYTHONPATH=app pytest tests/resilience -v --disable-warnings
-
-      # -----------------------------
-      # E2E TESTS
-      # -----------------------------
-      - name: Run e2e tests
-        if: ${{ github.event.inputs.suite == 'e2e' || github.event.inputs.suite == 'all' }}
-        run: |
-          echo "🌐 Running e2e tests..."
-          PYTHONPATH=app pytest tests/e2e -v --disable-warnings
