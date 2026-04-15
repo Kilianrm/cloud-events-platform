@@ -88,8 +88,8 @@ destroy_system() {
     echo "✅ All resources destroyed."
 
     if [ -f ".env" ]; then
-        sed -i'' -e '/^API_BASE_URL=/d' .env
-        echo "✅ API_BASE_URL removed from .env"
+        rm -f .env
+        echo "🗑️ .env file removed"
     fi
 }
 

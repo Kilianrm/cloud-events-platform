@@ -18,7 +18,7 @@ resource "aws_lambda_event_source_mapping" "ingestion" {
   event_source_arn = aws_sqs_queue.event_queue.arn
   function_name    = aws_lambda_function.ingestion.arn
 
-  batch_size       = 10
+  batch_size = 10
 
   function_response_types = ["ReportBatchItemFailures"]
 }

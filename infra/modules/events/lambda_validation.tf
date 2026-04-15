@@ -18,13 +18,13 @@ data "archive_file" "validation_zip" {
   }
 
   source {
-  content  = file("${var.app_path}/validation/validators.py")
-  filename = "validation/validators.py"
+    content  = file("${var.app_path}/validation/validators.py")
+    filename = "validation/validators.py"
   }
 
   source {
-  content  = file("${var.app_path}/shared/response.py")
-  filename = "shared/response.py"
+    content  = file("${var.app_path}/shared/response.py")
+    filename = "shared/response.py"
   }
   source {
     content  = file("${var.app_path}/shared/parse_utils.py")
