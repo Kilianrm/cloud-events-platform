@@ -26,6 +26,8 @@ can be found here:
 - Dedicated read and write APIs
 - Authentication and authorization layer
 - Traffic control and request throttling
+- Decoupled ingestion pipeline with validation layer and asynchronous processing via SQS
+- Automatic retry mechanism with Dead Letter Queue (DLQ) for failed events
 - Serverless architecture on AWS
 - DynamoDB persistence layer
 - Infrastructure provisioning with Terraform
@@ -51,6 +53,7 @@ infra/              # Infrastructure as Code (Terraform)
 docs/               # Architecture, API contracts, and design decisions
 app/                # Application code (Lambda functions)
 tests/              # Unit, integration, and end-to-end tests.
+run.sh              # Quick start script
 ```
 
 ## Documentation
@@ -84,7 +87,7 @@ All project operations are done via `run.sh` from the **project root**:
 | Command | Description |
 |---------|-------------|
 | `./run.sh deploy` | Deploy the system to AWS |
-| `./run.sh test` | Run the E2E tests against the deployed API. |
+| `./run.sh test` | Run the system deployed tests. |
 | `./run.sh destroy` | Destroy the system in AWS |
 
 ---
@@ -97,7 +100,7 @@ All project operations are done via `run.sh` from the **project root**:
 ./run.sh deploy
 ```
 
-2. **Run end-to-end tests:**
+2. **Run post-deploy tests:**
 
 ```bash
 ./run.sh test
@@ -121,17 +124,19 @@ sudo usermod -aG docker $USER
 Once the deployment finishes, the following resources will be available:
 
 - API Gateway endpoints for event ingestion and event reading
-- Lambda functions implementing ingestion and read logic
+- Lambda functions implementing validation, ingestion and read logic
 - DynamoDB table for event storage
 - Associated IAM roles and permissions
 - Secrets configured in Secrets Manager
 - Group logs and metrics in CloudWatch
 - Lambda functions implementing custom Authentication and authoriation using JWT.
+- SQS queue and Dead Letter Queue (DLQ) to ensure reliable and fault-tolerant event processing
+
 
 
 ## Versioning
 
-The current stable version of the project is `v1.2.0`.
+The current stable version of the project is `v1.3.0`.
 
 This release represents a closed and fully documented baseline of the system.
 Future improvements and extensions are intentionally planned outside the scope

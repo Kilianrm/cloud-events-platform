@@ -52,5 +52,5 @@ output "queue_url" {
 }
 
 output "dlq_url" {
-  value       = module.events.dlq_url
+  value = module.events.dlq_url
 }
