@@ -1,15 +1,20 @@
 import os
+
+import boto3
+
 from read.errors import EventNotFound
+
+# Created once per Lambda container, at import time. Lambda runs module-level code
+# during init, which gets more CPU than the request itself; importing boto3 inside
+# the request made reads on a 128 MB function exceed the 5s timeout.
+_table = boto3.resource(
+    "dynamodb",
+    region_name=os.environ.get("AWS_REGION", "us-east-1"),
+).Table(os.environ.get("TABLE_NAME", "events"))
 
 
 def get_table():
-    import boto3
-
-    region = os.environ.get("AWS_REGION", "us-east-1")
-    table_name = os.environ.get("TABLE_NAME", "events")
-
-    dynamodb = boto3.resource("dynamodb", region_name=region)
-    return dynamodb.Table(table_name)
+    return _table
 
 
 def get_event(event_id: str, table=None) -> dict:

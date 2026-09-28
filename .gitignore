@@ -29,3 +29,6 @@ __pycache__/
 .env
 
 venv/
+# Demo UI
+demo/.venv/
+demo/recordings/

@@ -53,6 +53,7 @@ infra/              # Infrastructure as Code (Terraform)
 docs/               # Architecture, API contracts, and design decisions
 app/                # Application code (Lambda functions)
 tests/              # Unit, integration, and end-to-end tests.
+demo/               # Local demo UI (deploy, tests and live traffic in the browser)
 run.sh              # Quick start script
 ```
 
@@ -79,6 +80,19 @@ The recommended entry point is the development environment.
 - **Docker installed** (required to run end-to-end tests)
 
 > No need to run `terraform init` or `terraform apply` manually—everything is handled by `./run.sh`.  
+
+### Environment variables
+
+Post-deploy tests and the demo UI read the deployment's endpoints from a `.env` file
+(see [`.env.example`](.env.example)). `./run.sh deploy` creates it automatically from
+the Terraform outputs, so usually there is nothing to do.
+
+If the platform is already deployed and `.env` is missing, create it by hand:
+
+```bash
+cp .env.example .env
+terraform -chdir=infra/envs/dev output   # copy each value into .env
+```
 
 ## Usage
 
@@ -118,6 +132,53 @@ All project operations are done via `run.sh` from the **project root**:
 ```bash
 sudo usermod -aG docker $USER
 ```
+
+## Demo UI
+
+A local web UI that runs the same lifecycle as `run.sh` (tests, deploy, destroy)
+from the browser and animates it on the architecture diagram, plus live traffic
+traced hop by hop through API Gateway, Lambdas, SQS and DynamoDB.
+
+![Demo UI](demo_ui.png)
+
+### Start it
+
+From Linux/WSL at the project root (same prerequisites as above, plus Python 3.11):
+
+```bash
+./demo/start.sh
+```
+
+Open **http://localhost:8000**. The first start creates `demo/.venv` and installs
+dependencies. Stop it with `Ctrl+C`.
+
+### Use it
+
+On load, the UI reads the Terraform state and shows what is currently deployed.
+
+| Action | Where | What happens |
+|--------|-------|--------------|
+| Run everything | **Run full pipeline** | Pre-deploy tests → deploy → post-deploy tests, stopping at the first failure |
+| Deploy | **Deploy** | `terraform apply`; each component goes *planned → creating → deployed* on the diagram (**Deployment** tab lists every resource) |
+| Test | **Pre-deploy tests** / **Post-deploy tests** | Runs `tests/pre_deploy` (local, mocked AWS) or `tests/post_deploy` (real AWS); results stream into the **Tests** tab |
+| Send traffic | **Traffic** tab → **Send** | Real requests against the API; packets show each hop, and the inspector shows requests, responses and correlation IDs |
+| Tear down | **Destroy** | `terraform destroy` (asks for confirmation) |
+| Replay | **Replays** tab | Re-plays any recorded job or scenario without calling AWS |
+
+Hover a component for a description, click it to see its Terraform resources.
+**Cancel** stops the running job.
+
+The traffic scenarios live in [`demo/scenarios.py`](demo/scenarios.py) and are a
+visual walkthrough, separate from the test suites in `tests/`.
+
+### Troubleshooting
+
+- **Blank page on `localhost:8000` (WSL):** WSL's port forwarding can get stuck.
+  Run `wsl --shutdown` in PowerShell and start the demo again, or open
+  `http://<ip>:8000` using the IP from `hostname -I` in WSL.
+- **Port in use:** `PORT=8080 ./demo/start.sh`.
+
+More details in [`demo/README.md`](demo/README.md).
 
 ## Deployed resources
 
